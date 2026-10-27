@@ -1,0 +1,10 @@
+{
+  "name": "wuwatappo-helper",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Non-official WuwaTappo 1.0.1 helper patches and Windows packaging",
+  "scripts": {
+    "test": "node patches/test-auto-chest.cjs && node patches/test-room-visibility.cjs && node patches/test-hotkeys.cjs && node patches/test-panel-capture.cjs && node patches/test-inventory-share.cjs"
+  },
+  "devDependencies": {"@napi-rs/canvas": "0.1.100"}
+}

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+patches/assets/
+patches/share-fixtures/
+patches/helper-release/
+patches/*-tests.json
+patches/hotkey-tests.json
+*.log
+*.tmp
+*.exe
+*.zip
+*.patched.mjs

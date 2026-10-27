@@ -1,0 +1,18 @@
+{
+  "version": "1.0.1",
+  "sourcePath": "",
+  "sourceSha256": "dd340c92a7320d1ecf3697ba65b4ad23d8f196acb547d2baf3f75ba09d696d97",
+  "settingsAsset": "/assets/index-DJ7ReN0h.js",
+  "panelAsset": "/assets/index-DmC0wUEw.js",
+  "mainAsset": "/assets/index-D8GJxFG7.js",
+  "bridgeAsset": "/assets/appAutostart-ZFMxHrq5.js",
+  "hiddenAnchor": "b(!1)?(l(),v(\"button\",{key:0,type:\"button\",class:\"setting-btn btn-boost-clicks\"",
+  "handlerName": "As",
+  "deltaName": "cl",
+  "bridgeAnchors": [
+    "async function Rt(e){await p(W,e)}",
+    "W=\"cat-panel-action\"",
+    "Rt as C"
+  ],
+  "bridgeImport": "C as de"
+}

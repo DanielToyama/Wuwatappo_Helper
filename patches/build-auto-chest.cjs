@@ -1,0 +1,154 @@
+const fs=require('node:fs');
+const path=require('node:path');
+const crypto=require('node:crypto');
+const zlib=require('node:zlib');
+const cp=require('node:child_process');
+const assert=require('node:assert/strict');
+const withHelperRelease=process.argv.includes('--helper-release');
+const withInventoryShare=process.argv.includes('--inventory-share')||withHelperRelease;
+const withScreenshotFix=process.argv.includes('--screenshot-fix')||withInventoryShare;
+const withHotkeys=process.argv.includes('--hotkeys')||withScreenshotFix;
+const withRoomVisibility=process.argv.includes('--room-visibility')||withHotkeys;
+const config=JSON.parse(fs.readFileSync(path.join(__dirname,'patch-config.json'),'utf8'));
+const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'extraction-manifest.json'),'utf8'));
+config.sourcePath=process.env.WUWA_SOURCE_EXE||config.sourcePath;
+const source=fs.readFileSync(config.sourcePath);
+const hash=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+assert.equal(hash(source),config.sourceSha256,'Source is no longer the reviewed 1.0.1 executable');
+cp.execFileSync(process.execPath,[path.join(__dirname,'test-auto-chest.cjs')],{stdio:'pipe'});
+if(withRoomVisibility)cp.execFileSync(process.execPath,[path.join(__dirname,'test-room-visibility.cjs')],{stdio:'pipe'});
+if(withHotkeys)cp.execFileSync(process.execPath,[path.join(__dirname,'test-hotkeys.cjs')],{stdio:'pipe'});
+if(withScreenshotFix)cp.execFileSync(process.execPath,[path.join(__dirname,'test-panel-capture.cjs')],{stdio:'pipe'});
+if(withInventoryShare)cp.execFileSync(process.execPath,[path.join(__dirname,'test-inventory-share.cjs')],{stdio:'pipe'});
+const runtime=fs.readFileSync(path.join(__dirname,'auto-chest-runtime.js'),'utf8');
+const settingsRuntime=fs.readFileSync(path.join(__dirname,'auto-chest-settings.js'),'utf8');
+const outputDir=path.join(__dirname,withHelperRelease?'helper-release':withInventoryShare?'inventory-share':withScreenshotFix?'screenshot-fix':withHotkeys?'hotkeys-test':withRoomVisibility?'combined-test':'auto-chest-test');
+fs.mkdirSync(outputDir,{recursive:true});
+function replaceOnce(text,from,to){assert.equal(text.split(from).length-1,1,`Ambiguous patch anchor ${from}`);return text.replace(from,to);}
+function asset(name){
+ const meta=manifest.assets.find(a=>a.name===name);assert(meta,`Missing resource ${name}`);
+ const old=source.subarray(meta.offset,meta.offset+meta.compressedBytes);
+ const decoded=zlib.brotliDecompressSync(old);
+ assert.equal(hash(decoded),meta.sha256);
+ assert(decoded.equals(fs.readFileSync(path.join(__dirname,'assets',path.basename(name)))));
+ return {meta,text:decoded.toString('utf8')};
+}
+const settings=asset(config.settingsAsset);
+let text=settings.text;
+text=replaceOnce(text,config.hiddenAnchor,config.hiddenAnchor.replace('(!1)','(!0)'));
+text=replaceOnce(text,'async function As(){}',settingsRuntime+'async function As(){await de({type:"boost-local-clicks",delta:cl})}');
+const row='e("div",{class:"setting-item"},[e("div",{class:"setting-label"},[e("div",{class:"setting-title"},"自动领取宝箱")]),e("div",{class:"setting-content"},[e("button",{type:"button",class:"setting-btn",title:"冷却归零后至少等待2秒，点击数足够时领取；失败后30秒重试",onMousedown:P(()=>{},["stop"]),onClick:P(__wtToggleAutoChest,["stop"]),"aria-pressed":__wtAutoChestUi.value},__wtAutoChestUi.value?"已开启":"已关闭",9,["aria-pressed"])])])';
+text=replaceOnce(text,'e("div",Oo,[e("div",Bo,[',row+',e("div",Oo,[e("div",Bo,[');
+assert(text.includes('cl=1e4'));
+if(withRoomVisibility){
+ const roomUi=fs.readFileSync(path.join(__dirname,'room-visibility-ui.js'),'utf8');
+ text=replaceOnce(text,'const f=M(()=>_.roomMode!=="idle");',roomUi+'const f=M(()=>_.roomMode!=="idle");');
+ const roomButtonStyle='{position:"static",display:"inline-flex",alignItems:"center",justifyContent:"center",boxSizing:"border-box",height:"36px",lineHeight:"normal",padding:"0 12px",margin:"0",minWidth:"0",flex:"1 1 0",fontSize:"16px",fontFamily:"inherit",whiteSpace:"nowrap",textAlign:"center",background:"#fed291",color:"#8e5e43",border:"1px solid #E7B77C",borderRadius:"18px",cursor:"pointer"}';
+ const roomRow='e("div",{class:"room-bulk-visibility",style:{display:"flex",alignItems:"center",width:"100%",gap:"8px",margin:"12px 0"}},[e("button",{type:"button",class:"wt-room-bulk-button",style:'+roomButtonStyle+',title:"在本机隐藏当前其他在线成员的桌宠",onMousedown:P(()=>{},["stop"]),onClick:P(()=>__wtBulkRoomVisible(false),["stop"])},"一键不可见"),e("button",{type:"button",class:"wt-room-bulk-button",style:'+roomButtonStyle+',title:"在本机显示其他成员允许展示的桌宠",onMousedown:P(()=>{},["stop"]),onClick:P(()=>__wtBulkRoomVisible(true),["stop"])},"一键可见")])';
+ text=replaceOnce(text,'t.roomMembers.length?(l(),v("ul",Ji,',roomRow+',t.roomMembers.length?(l(),v("ul",Ji,');
+}
+if(withHotkeys){
+ text=replaceOnce(text,'const __wtAutoChestUi=', 'const __wtKeySettings=__wtHotkeys.createSettings(w,He);const __wtAutoChestUi=');
+ text=replaceOnce(text,'e("div",Oo,[e("div",Bo,[','__wtHotkeys.render(e,__wtKeySettings),e("div",Oo,[e("div",Bo,[');
+ text=replaceOnce(text,'L(b(n)("setting_screen_tips"))','L("快捷键："+(__wtHotkeys.read().monitor||"未设置"))');
+ text=replaceOnce(text,'L(b(n)("setting_game_mode_tip"))','L("无宝箱可领取时禁用桌宠交互；快捷键："+(__wtHotkeys.read().game||"未设置"))');
+ text+='\nimport{__wtHotkeys}from"./'+path.basename(config.mainAsset)+'";\n';
+}
+if(withInventoryShare){
+ text+='\nimport{__wtInventoryShare,__wtNormalPanel}from"./'+path.basename(config.mainAsset)+'";\n';
+ text=replaceOnce(text,'const _=t,c=q,T=M(()=>{if(!oe.isLoggedIn)',
+  'const _=t,c=q,__wtShare=__wtInventoryShare.create(w,()=>({items:_.bagList,host:_.assetsCdnHost,loggedIn:oe.isLoggedIn,loading:_.bagListLoading}),He),T=M(()=>{if(!oe.isLoggedIn)');
+ text=replaceOnce(text,'[e("div",ql,[e("div",Xl,[','[__wtInventoryShare.render(e,__wtShare),e("div",ql,[e("div",Xl,[');
+ text=replaceOnce(text,'let k,V,N;function d(){requestAnimationFrame(()=>{ro().catch(C=>{console.warn("[panel] raise above pets failed",C)})})}',
+  'let k,V,N,__wtNormalizeStop;function d(){requestAnimationFrame(()=>{__wtNormalPanel(_).catch(C=>{console.warn("[panel] normal window failed",C)})})}');
+ text=replaceOnce(text,'const C=O.query.tab;','__wtNormalizeStop=await Dn("wt-panel-normalize",()=>d());const C=O.query.tab;');
+ text=replaceOnce(text,'pt(()=>{k?.(),V?.(),N?.(),xt()})','pt(()=>{k?.(),V?.(),N?.(),__wtNormalizeStop?.(),xt()})');
+}
+settings.patched=text;
+const panel=asset(config.panelAsset);
+assert(!panel.text.includes('__wtAutoChest'));
+let panelText=replaceOnce(panel.text,'function Ip(e){',runtime+'function Ip(e){');
+panelText=replaceOnce(panelText,'function Ip(e){switch(e.type){','function Ip(e){switch(e.type){case"set-auto-claim-chests":typeof e.enabled==="boolean"&&__wtSetAutoChest(e.enabled),tt();break;');
+panelText=replaceOnce(panelText,'Ar=setInterval(()=>{R.isLoggedIn&&xo()},1e3)','Ar=setInterval(()=>{R.isLoggedIn&&xo(),__wtAutoChestTick()},1e3)');
+assert(panelText.includes('await rm({place:e,click_num:R.cumulativeClickCount})'));
+assert(panelText.includes('case"boost-local-clicks":'));
+assert(panelText.includes('Li=await Ym(Ip)'));
+if(withRoomVisibility){
+ const roomRuntime=fs.readFileSync(path.join(__dirname,'room-visibility-runtime.js'),'utf8');
+ panelText=replaceOnce(panelText,'function Kp(e){',roomRuntime+'function Kp(e){');
+ panelText=replaceOnce(panelText,'case"toggle-room-member":Kp(e.memberId);break;',
+  'case"set-room-members-visibility":__wtSetAllRoomMembersVisible(e.visible);break;case"toggle-room-member":Kp(e.memberId);break;');
+}
+if(withHotkeys){
+ const hotkeyRuntime=fs.readFileSync(path.join(__dirname,'hotkeys-runtime.js'),'utf8');
+ panelText=replaceOnce(panelText,'function wc(e){',hotkeyRuntime+'function wc(e){');
+ panelText=replaceOnce(panelText,'function ks(n){return Dg.has(n)}','function ks(n){return false}');
+ panelText=replaceOnce(panelText,'function Cs(n){return Bg.has(n)}','function Cs(n){return false}');
+ panelText=replaceOnce(panelText,'function Ss(n){return qg.has(n)}','function Ss(n){return false}');
+ panelText=replaceOnce(panelText,'function _c(e){','function _c(e){__wtNativeHotkeyDown(e);');
+ panelText=replaceOnce(panelText,'function kc(e){','function kc(e){__wtNativeHotkeyUp(e);');
+ panelText=replaceOnce(panelText,'Li=await Ym(Ip),','Li=await Ym(Ip),await __wtInstallHotkeys(),');
+ panelText=replaceOnce(panelText,'vi(()=>{Jp(),hc(),','vi(()=>{__wtDisposeHotkeys();Jp(),hc(),');
+ panelText+='\nimport{__wtHotkeys}from"./'+path.basename(config.mainAsset)+'";\n';
+}
+panel.patched=panelText;
+const resources=[settings,panel];
+if(withHotkeys){
+ const common=asset(config.mainAsset);
+ assert(!common.text.includes('__wtHotkeys'));
+ common.patched=common.text+'\n'+fs.readFileSync(path.join(__dirname,'hotkeys-core.js'),'utf8');
+ if(withInventoryShare)common.patched+='\n'+fs.readFileSync(path.join(__dirname,'inventory-share.js'),'utf8');
+ common.patched=replaceOnce(common.patched,'hidePet:e("native_menu_hide_pet")','hidePet:e("native_menu_hide_pet").replace(/F9/g,__wtHotkeys.read().visibility||"未设置")');
+ common.patched=replaceOnce(common.patched,'showPet:e("native_menu_show_pet")','showPet:e("native_menu_show_pet").replace(/F9/g,__wtHotkeys.read().visibility||"未设置")');
+ const monitor=asset('/assets/switchDisplayMonitor-BnjVcRPf.js');
+ monitor.patched=replaceOnce(monitor.text,'function Dt(t){return Mt.has(t)}','function Dt(t){return false}');
+ resources.push(common,monitor);
+}
+if(withScreenshotFix){
+ const bridge=asset(config.bridgeAsset);
+ bridge.patched=replaceOnce(bridge.text,'async function Wt(e){await _("open_panel_window",{payload:{tab:e??null}})}',fs.readFileSync(path.join(__dirname,'panel-open-guard.js'),'utf8').trim());
+ if(withInventoryShare){
+  bridge.patched=replaceOnce(bridge.patched,'async function qt(){await _("raise_panel_window_above_pets")}','async function qt(){}');
+  bridge.patched=replaceOnce(bridge.patched,'await _("open_panel_window",{payload:{tab:e??null}});','await _("open_panel_window",{payload:{tab:e??null}});await p("wt-panel-normalize");');
+ }
+ resources.push(bridge);
+}
+const patched=Buffer.from(source), changes=[];
+for(const resource of resources){
+ const bytes=Buffer.from(resource.patched);
+ const compressed=zlib.brotliCompressSync(bytes,{params:{
+  [zlib.constants.BROTLI_PARAM_MODE]:zlib.constants.BROTLI_MODE_TEXT,
+  [zlib.constants.BROTLI_PARAM_QUALITY]:11,
+  [zlib.constants.BROTLI_PARAM_LGWIN]:22,
+  [zlib.constants.BROTLI_PARAM_SIZE_HINT]:bytes.length
+ }});
+ assert(compressed.length<=resource.meta.compressedBytes,`Replacement does not fit ${resource.meta.name}`);
+ const start=resource.meta.offset,end=start+resource.meta.compressedBytes;
+ patched.fill(0,start,end);compressed.copy(patched,start);
+ assert(zlib.brotliDecompressSync(patched.subarray(start,end)).equals(bytes));
+ const jsPath=path.join(outputDir,path.basename(resource.meta.name).replace(/\.js$/,'.patched.mjs'));
+ fs.writeFileSync(jsPath,bytes);cp.execFileSync(process.execPath,['--check',jsPath],{stdio:'pipe'});
+ changes.push({asset:resource.meta.name,offset:start,oldCompressedBytes:resource.meta.compressedBytes,
+  newCompressedBytes:compressed.length,paddedBytes:resource.meta.compressedBytes-compressed.length,
+  expandedBytes:bytes.length,jsPath});
+}
+let cursor=0;
+for(const change of [...changes].sort((a,b)=>a.offset-b.offset)){
+ assert(source.subarray(cursor,change.offset).equals(patched.subarray(cursor,change.offset)));
+ cursor=change.offset+change.oldCompressedBytes;
+}
+assert(source.subarray(cursor).equals(patched.subarray(cursor)));
+assert.equal(hash(fs.readFileSync(config.sourcePath)),config.sourceSha256);
+const outputPath=path.join(outputDir,withHelperRelease?'Wuwatappo_Helper.exe':withInventoryShare?'WuwaTappo-inventory-share.exe':withScreenshotFix?'WuwaTappo-screenshot-fix.exe':withHotkeys?'WuwaTappo-hotkeys.exe':withRoomVisibility?'WuwaTappo-enhanced.exe':'WuwaTappo-auto-chest.exe');
+fs.writeFileSync(outputPath,patched);assert(fs.readFileSync(outputPath).equals(patched));
+const report={version:'1.0.1',sourcePath:config.sourcePath,sourceSha256:config.sourceSha256,
+ outputPath,outputSha256:hash(patched),exeBytes:patched.length,
+ features:['Existing +10000 button retained','Optional automatic left and right chest claims','Existing cooldown and balance checks','No simultaneous automatic claims','30-second retry delay','Default off; setting persists'],
+ changes,testsPassed:true,sourceUnchanged:true,runtimeTested:false,serverClaimTested:false};
+if(withRoomVisibility)report.features.push('Room tab: hide all peer pets locally','Room tab: show all eligible peer pets locally');
+report.features.push('Automatic claims wait at least 2 seconds after countdown readiness');
+if(withHotkeys)report.features.push('Configurable F5/F7/F8/F9 actions with modifier combinations','Persistent key bindings and reset defaults','Duplicate and reserved-key conflict feedback','Centered room visibility button labels');
+if(withScreenshotFix)report.features.push('Panel stays open on outside clicks via native skip guard','PrtScr passes through shortcut recording and action dispatch','Finished recorder does not consume unrelated keys');
+if(withInventoryShare)report.features.push('Panel requests normal non-topmost window behavior and taskbar presence on open','Automatic raise-above-pets bridge disabled','Full owned inventory PNG export: characters / accessories / emotes, five columns','Original panel background and inventory quantity badges','Original four rarity PNG backgrounds','Rarity descending then series and role name in Chinese pinyin order','PNG preview with save and copy; oversized inventories split at canvas limit','Failed image loads visibly marked');
+fs.writeFileSync(path.join(outputDir,'patch-manifest.json'),JSON.stringify(report,null,2));
+console.log(JSON.stringify(report,null,2));
