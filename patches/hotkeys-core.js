@@ -1,6 +1,6 @@
 const __wtHotkeys=(()=>{
  const key="wuwatappo-hotkeys-v1";
- const actions=[{id:"game",label:"游戏模式",defaultKey:"F7"},{id:"monitor",label:"切换屏幕",defaultKey:"F8"},{id:"visibility",label:"显示／隐藏桌宠",defaultKey:"F9"},{id:"reload",label:"刷新界面",defaultKey:"F5"}];
+ const actions=[{id:"game",label:"游戏模式",defaultKey:"F7"},{id:"monitor",label:"切换屏幕",defaultKey:"F8"},{id:"visibility",label:"显示／隐藏桌宠",defaultKey:"F9"},{id:"reload",label:"刷新界面",defaultKey:"F5"},{id:"record",label:"鸣潮录制开始／结束",defaultKey:"Ctrl+Alt+F10"}];
  const defaults=()=>Object.fromEntries(actions.map(a=>[a.id,a.defaultKey]));
  const pressed=new Map();let localCapture=false;const owner="hk-"+Math.random().toString(36).slice(2);
  function normalizeKey(raw){
@@ -33,7 +33,7 @@ const __wtHotkeys=(()=>{
   }
   return{errors,warnings};
  }
- function read(){try{const saved=JSON.parse(localStorage.getItem(key)||"null");const result={...defaults(),...saved};return validate(result).errors.length?defaults():result}catch{return defaults()}}
+ function read(){try{const saved=JSON.parse(localStorage.getItem(key)||"null");const result={...defaults(),...saved};if(saved&&!Object.hasOwn(saved,"record")&&actions.some(a=>a.id!=="record"&&canonical(result[a.id])===result.record))result.record="";return validate(result).errors.length?defaults():result}catch{return defaults()}}
  function actionFor(chord){const config=read();return actions.find(a=>config[a.id]&&canonical(config[a.id])===chord)?.id||null}
  function fromEvent(event){
   if(event.metaKey||event.repeat)return null;

@@ -1,10 +1,11 @@
 {
   "name": "wuwatappo-helper",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Non-official WuwaTappo 1.0.1 helper patches and Windows packaging",
   "scripts": {
-    "test": "node patches/test-auto-chest.cjs && node patches/test-room-visibility.cjs && node patches/test-hotkeys.cjs && node patches/test-panel-capture.cjs && node patches/test-inventory-share.cjs"
+    "test": "node patches/test-auto-chest.cjs && node patches/test-room-visibility.cjs && node patches/test-hotkeys.cjs && node patches/test-panel-capture.cjs && node patches/test-inventory-share.cjs && node patches/test-input-recorder.cjs",
+    "test:keyboard-ui": "node scripts/test-keyboard-ui.cjs"
   },
-  "devDependencies": {"@napi-rs/canvas": "0.1.100"}
+  "devDependencies": {"@napi-rs/canvas": "0.1.100", "playwright": "1.62.1"}
 }

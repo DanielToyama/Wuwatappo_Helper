@@ -5,7 +5,8 @@ const zlib=require('node:zlib');
 const cp=require('node:child_process');
 const assert=require('node:assert/strict');
 const withHelperRelease=process.argv.includes('--helper-release');
-const withInventoryShare=process.argv.includes('--inventory-share')||withHelperRelease;
+const withKeyboard=withHelperRelease||process.argv.includes('--keyboard-ui');
+const withInventoryShare=process.argv.includes('--inventory-share')||withKeyboard;
 const withScreenshotFix=process.argv.includes('--screenshot-fix')||withInventoryShare;
 const withHotkeys=process.argv.includes('--hotkeys')||withScreenshotFix;
 const withRoomVisibility=process.argv.includes('--room-visibility')||withHotkeys;
@@ -20,6 +21,7 @@ if(withRoomVisibility)cp.execFileSync(process.execPath,[path.join(__dirname,'tes
 if(withHotkeys)cp.execFileSync(process.execPath,[path.join(__dirname,'test-hotkeys.cjs')],{stdio:'pipe'});
 if(withScreenshotFix)cp.execFileSync(process.execPath,[path.join(__dirname,'test-panel-capture.cjs')],{stdio:'pipe'});
 if(withInventoryShare)cp.execFileSync(process.execPath,[path.join(__dirname,'test-inventory-share.cjs')],{stdio:'pipe'});
+if(withKeyboard)cp.execFileSync(process.execPath,[path.join(__dirname,'test-input-recorder.cjs')],{stdio:'pipe'});
 const runtime=fs.readFileSync(path.join(__dirname,'auto-chest-runtime.js'),'utf8');
 const settingsRuntime=fs.readFileSync(path.join(__dirname,'auto-chest-settings.js'),'utf8');
 const outputDir=path.join(__dirname,withHelperRelease?'helper-release':withInventoryShare?'inventory-share':withScreenshotFix?'screenshot-fix':withHotkeys?'hotkeys-test':withRoomVisibility?'combined-test':'auto-chest-test');
@@ -52,7 +54,11 @@ if(withHotkeys){
  text=replaceOnce(text,'e("div",Oo,[e("div",Bo,[','__wtHotkeys.render(e,__wtKeySettings),e("div",Oo,[e("div",Bo,[');
  text=replaceOnce(text,'L(b(n)("setting_screen_tips"))','L("快捷键："+(__wtHotkeys.read().monitor||"未设置"))');
  text=replaceOnce(text,'L(b(n)("setting_game_mode_tip"))','L("无宝箱可领取时禁用桌宠交互；快捷键："+(__wtHotkeys.read().game||"未设置"))');
- text+='\nimport{__wtHotkeys}from"./'+path.basename(config.mainAsset)+'";\n';
+ if(withKeyboard){
+  text=replaceOnce(text,'const __wtKeySettings=__wtHotkeys.createSettings(w,He);','const __wtKeyboardSettings=__wtKeyboardUi.settings(w,He),__wtKeySettings=__wtHotkeys.createSettings(w,He);');
+  text=replaceOnce(text,'__wtHotkeys.render(e,__wtKeySettings),','__wtKeyboardUi.renderSettings(e,__wtKeyboardSettings),__wtHotkeys.render(e,__wtKeySettings),');
+ }
+ text+='\nimport{__wtHotkeys'+(withKeyboard?',__wtKeyboardUi':'')+'}from"./'+path.basename(config.mainAsset)+'";\n';
 }
 if(withInventoryShare){
  text+='\nimport{__wtInventoryShare,__wtNormalPanel}from"./'+path.basename(config.mainAsset)+'";\n';
@@ -80,16 +86,18 @@ if(withRoomVisibility){
   'case"set-room-members-visibility":__wtSetAllRoomMembersVisible(e.visible);break;case"toggle-room-member":Kp(e.memberId);break;');
 }
 if(withHotkeys){
- const hotkeyRuntime=fs.readFileSync(path.join(__dirname,'hotkeys-runtime.js'),'utf8');
+ let hotkeyRuntime=fs.readFileSync(path.join(__dirname,'hotkeys-runtime.js'),'utf8');
+ if(withKeyboard)hotkeyRuntime+='\nconst __wtKeyboard=__wtKeyboardUi.create({listen:mt,layout:()=>Oe(()=>Ie()),toClient:Ht,visible:()=>b.value,hotkeys:__wtHotkeys,blocked:()=>Me()||[...__wtHotkeyCaptureOwners.values()].some(until=>until>Date.now())});\n';
  panelText=replaceOnce(panelText,'function wc(e){',hotkeyRuntime+'function wc(e){');
  panelText=replaceOnce(panelText,'function ks(n){return Dg.has(n)}','function ks(n){return false}');
  panelText=replaceOnce(panelText,'function Cs(n){return Bg.has(n)}','function Cs(n){return false}');
  panelText=replaceOnce(panelText,'function Ss(n){return qg.has(n)}','function Ss(n){return false}');
- panelText=replaceOnce(panelText,'function _c(e){','function _c(e){__wtNativeHotkeyDown(e);');
- panelText=replaceOnce(panelText,'function kc(e){','function kc(e){__wtNativeHotkeyUp(e);');
- panelText=replaceOnce(panelText,'Li=await Ym(Ip),','Li=await Ym(Ip),await __wtInstallHotkeys(),');
- panelText=replaceOnce(panelText,'vi(()=>{Jp(),hc(),','vi(()=>{__wtDisposeHotkeys();Jp(),hc(),');
- panelText+='\nimport{__wtHotkeys}from"./'+path.basename(config.mainAsset)+'";\n';
+ panelText=replaceOnce(panelText,'function _c(e){',withKeyboard?'function _c(e){const __wtAction=__wtNativeHotkeyDown(e);__wtKeyboard.key(e,true,{control:__wtAction==="record"});':'function _c(e){__wtNativeHotkeyDown(e);');
+ panelText=replaceOnce(panelText,'function kc(e){','function kc(e){__wtNativeHotkeyUp(e);'+(withKeyboard?'__wtKeyboard.key(e,false);':''));
+ if(withKeyboard)panelText=replaceOnce(panelText,'const t=e.payload.button,i=e.payload.action;','const t=e.payload.button,i=e.payload.action;__wtKeyboard.mouse(t,i,{x:re.value,y:pe.value});');
+ panelText=replaceOnce(panelText,'Li=await Ym(Ip),','Li=await Ym(Ip),await __wtInstallHotkeys(),'+(withKeyboard?'await __wtKeyboard.mount(),':''));
+ panelText=replaceOnce(panelText,'vi(()=>{Jp(),hc(),','vi(()=>{'+(withKeyboard?'__wtKeyboard.dispose();':'')+'__wtDisposeHotkeys();Jp(),hc(),');
+ panelText+='\nimport{__wtHotkeys'+(withKeyboard?',__wtKeyboardUi':'')+'}from"./'+path.basename(config.mainAsset)+'";\n';
 }
 panel.patched=panelText;
 const resources=[settings,panel];
@@ -98,6 +106,7 @@ if(withHotkeys){
  assert(!common.text.includes('__wtHotkeys'));
  common.patched=common.text+'\n'+fs.readFileSync(path.join(__dirname,'hotkeys-core.js'),'utf8');
  if(withInventoryShare)common.patched+='\n'+fs.readFileSync(path.join(__dirname,'inventory-share.js'),'utf8');
+ if(withKeyboard)common.patched+='\n'+fs.readFileSync(path.join(__dirname,'input-recorder.js'),'utf8')+'\n'+fs.readFileSync(path.join(__dirname,'keyboard-ui.js'),'utf8');
  common.patched=replaceOnce(common.patched,'hidePet:e("native_menu_hide_pet")','hidePet:e("native_menu_hide_pet").replace(/F9/g,__wtHotkeys.read().visibility||"未设置")');
  common.patched=replaceOnce(common.patched,'showPet:e("native_menu_show_pet")','showPet:e("native_menu_show_pet").replace(/F9/g,__wtHotkeys.read().visibility||"未设置")');
  const monitor=asset('/assets/switchDisplayMonitor-BnjVcRPf.js');
@@ -150,5 +159,6 @@ report.features.push('Automatic claims wait at least 2 seconds after countdown r
 if(withHotkeys)report.features.push('Configurable F5/F7/F8/F9 actions with modifier combinations','Persistent key bindings and reset defaults','Duplicate and reserved-key conflict feedback','Centered room visibility button labels');
 if(withScreenshotFix)report.features.push('Panel stays open on outside clicks via native skip guard','PrtScr passes through shortcut recording and action dispatch','Finished recorder does not consume unrelated keys');
 if(withInventoryShare)report.features.push('Panel requests normal non-topmost window behavior and taskbar presence on open','Automatic raise-above-pets bridge disabled','Full owned inventory PNG export: characters / accessories / emotes, five columns','Original panel background and inventory quantity badges','Original four rarity PNG backgrounds','Rarity descending then series and role name in Chinese pinyin order','PNG preview with save and copy; oversized inventories split at canvas limit','Failed image loads visibly marked');
+if(withKeyboard)report.features.push('Chibi 26-letter keyboard attached in front of the pet','Wuwa-only Q/E/R, Space and two mouse buttons with live key highlights','Explicit start/stop recording limited to six game controls','JSON and CSV exports with press/release, relative times and hold durations','Configurable independent Ctrl+Alt+F10 recording shortcut','Recording stays in memory and is never uploaded automatically');
 fs.writeFileSync(path.join(outputDir,'patch-manifest.json'),JSON.stringify(report,null,2));
 console.log(JSON.stringify(report,null,2));

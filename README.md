@@ -4,7 +4,16 @@
 
 WuwaTappo 1.0.1 的非官方 Windows 辅助修改版本。原程序、角色、配件、表情及界面素材的权利归各自权利人所有。
 
-[下载安装包](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/latest/download/Wuwatappo_Helper-1.0.0-Setup.exe) · [下载免安装版](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/latest/download/Wuwatappo_Helper-1.0.0-Portable.zip) · [全部发布文件](https://github.com/Fantasicrap/Wuwatappo_Helper/releases) · [使用说明](docs/使用说明.md)
+[下载 1.1.0 预览版安装包](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.1.0/Wuwatappo_Helper-1.1.0-Setup.exe) · [下载免安装版](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.1.0/Wuwatappo_Helper-1.1.0-Portable.zip) · [全部发布文件](https://github.com/Fantasicrap/Wuwatappo_Helper/releases) · [使用说明](docs/使用说明.md)
+
+## 桌面键盘与鸣潮专属录制
+
+- 小人面前新增 26 个字母键的 QWERTY 键盘，宽度与桌宠画布一致，使用圆润键帽、奶油色底板和原界面的暖色描边；按下高亮，松开恢复。
+- 可切换为“鸣潮专属”：显示 Q/E/R、空格、鼠标左右键。设置中也可关闭键盘。
+- 点击“开始录制”或按 **Ctrl+Alt+F10** 开始，再次触发结束。这个独立快捷键可在设置中修改，并参加已有冲突检测。
+- **只录 Q/E/R、空格、鼠标左右键**。录制状态和时长始终在键盘下显示；没有自动开始或后台隐藏录制。
+- 结束后点击“导出 JSON”或“导出 CSV”。内容包含相对时间、按下/松开、按住时长。记录仅在本机内存中保留，不会自动上传；“清除”、退出或新一轮录制会清理上一轮数据。
+- 键盘高亮复用原程序的 `key-press` / `key-release` 与 `mouse-button` 事件。隔离浏览器已测试布局、事件适配和导出；本预览版尚未验证原生全局事件在真实游戏中的覆盖范围。
 
 ## 库存分享
 
@@ -25,7 +34,7 @@ WuwaTappo 1.0.1 的非官方 Windows 辅助修改版本。原程序、角色、�
 ## 安装与使用
 
 1. 退出正在运行的 WuwaTappo 或旧版修改程序。
-2. 下载并运行 `Wuwatappo_Helper-1.0.0-Setup.exe`，选择安装目录；桌面快捷方式可选。也可解压免安装版后运行 `Wuwatappo_Helper.exe`。
+2. 下载并运行 `Wuwatappo_Helper-1.1.0-Setup.exe`，选择安装目录；桌面快捷方式可选。也可解压免安装版后运行 `Wuwatappo_Helper.exe`。
 3. 登录并打开库存，等库存加载结束后点击“分享库存长图”。
 4. 生成完成后点击“保存 PNG”或“复制图片”。
 
@@ -35,7 +44,7 @@ WuwaTappo 1.0.1 的非官方 Windows 辅助修改版本。原程序、角色、�
 
 已完成隔离逻辑测试、排序及五列分页测试、使用原版底图的离线 PNG 排版检查、JavaScript 语法检查和 EXE 资源独立解压核验。安装包会进行独立目录安装和文件摘要检查。
 
-当前环境的原生窗口自动化未能初始化，因此窗口遮盖、WebView 中保存与复制、真实账号宝箱领取尚未经自动化实机验证。离线测试图片是示例素材，不是用户账号库存。程序更新后需要重新适配，不能将本补丁直接用于其他原件。
+新增键盘已通过隔离浏览器测试：26 键布局与尺寸、按键高亮、六键录制、控件点击排除、JSON/CSV 实际下载及生命周期清理。原生窗口遮盖、系统全局事件在真实游戏中的完整性、WebView 中保存与复制、真实账号宝箱领取尚未经自动化实机验证。离线测试图片是示例素材，不是用户账号库存。程序更新后需要重新适配，不能将本补丁直接用于其他原件。
 
 本版本只适配以下原始文件：
 
@@ -56,5 +65,7 @@ pwsh -File scripts/build.ps1 -SourceExe 'F:\WuwaTappo\WuwaTappo.exe' -IsccPath '
 ```
 
 脚本会核验原件摘要，提取构建所需资源并生成离线测试样例，运行检查，输出 EXE、安装包、免安装 ZIP 和 SHA-256 校验文件到 `dist/`。不会改动输入原件，也不会请求账号业务接口。
+
+安装 Edge 后可运行 `pnpm test:keyboard-ui` 进行隔离界面与下载测试；也可通过 `WUWA_TEST_BROWSER` 指定本机兼容浏览器路径。测试使用独立临时配置，不读取用户真实操作。安装包文件测试入口为 `pwsh -File scripts/test-package.ps1`。
 
 详见 [免责声明](DISCLAIMER.txt) 与 [第三方说明](THIRD_PARTY_NOTICES.md)。

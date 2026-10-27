@@ -2,12 +2,13 @@ param([string]$TestRoot)
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $distDir = Join-Path $repoRoot 'dist'
+$helperVersion = (Get-Content -LiteralPath (Join-Path $repoRoot 'package.json') -Raw | ConvertFrom-Json).version
 if (-not $TestRoot) { $TestRoot = Join-Path $distDir ('package-test-' + [Guid]::NewGuid().ToString('N')) }
 $targetPath = [System.IO.Path]::GetFullPath($TestRoot)
 $allowedRoot = [System.IO.Path]::GetFullPath($distDir) + [System.IO.Path]::DirectorySeparatorChar
 if (-not $targetPath.StartsWith($allowedRoot, [StringComparison]::OrdinalIgnoreCase)) { throw 'Package test target must stay inside dist' }
 if (Test-Path -LiteralPath $targetPath) { throw 'Package test target already exists; use a new empty path' }
-$setupFile = Join-Path $distDir 'Wuwatappo_Helper-1.0.0-Setup.exe'
+$setupFile = Join-Path $distDir "Wuwatappo_Helper-$helperVersion-Setup.exe"
 $logFile = Join-Path $distDir 'package-test.log'
 $setupArgs = '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /NOCLOSEAPPLICATIONS /NORESTARTAPPLICATIONS /NOICONS /TASKS="" /PACKAGE_TEST=1 /DIR="' + $targetPath + '" /LOG="' + $logFile + '"'
 $setupProcess = Start-Process -FilePath $setupFile -ArgumentList $setupArgs -WindowStyle Hidden -PassThru -Wait
@@ -25,7 +26,7 @@ foreach ($name in $files.Keys) {
     if ($actual -ne $expected) { throw ('Installed bytes differ: ' + $name) }
 }
 if (Test-Path -LiteralPath (Join-Path $targetPath 'unins000.exe')) { throw 'Package test unexpectedly created an uninstaller' }
-$zipFile = Join-Path $distDir 'Wuwatappo_Helper-1.0.0-Portable.zip'
+$zipFile = Join-Path $distDir "Wuwatappo_Helper-$helperVersion-Portable.zip"
 $zipTarget = $targetPath + '-zip'
 Expand-Archive -LiteralPath $zipFile -DestinationPath $zipTarget
 $zipExe = Join-Path $zipTarget 'Wuwatappo_Helper/Wuwatappo_Helper.exe'

@@ -11,8 +11,9 @@ function __wtPerformHotkey(action){
  else if(action==="game")ah();
  else if(action==="monitor"){if(cv())uv()}
  else if(action==="reload")Sn().finally(Wg);
+ else if(action==="record"&&typeof __wtKeyboard!=="undefined")__wtKeyboard.toggle();
 }
-function __wtNativeHotkeyDown(raw){const action=__wtHotkeys.nativeDown(raw);if(action)__wtPerformHotkey(action)}
+function __wtNativeHotkeyDown(raw){const action=__wtHotkeys.nativeDown(raw);if(action)__wtPerformHotkey(action);return action}
 function __wtNativeHotkeyUp(raw){__wtHotkeys.nativeUp(raw)}
 async function __wtInstallHotkeys(){
  __wtHotkeyStopAction=await mt("wt-hotkey-action",event=>__wtPerformHotkey(event.payload?.action));
