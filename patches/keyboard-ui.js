@@ -1,10 +1,13 @@
 const __wtKeyboardUi=(()=>{
  const storageKey='wuwatappo-keyboard-ui-v1',modes=['hidden','letters','wuwa'];
+ const lastModeKey='wuwatappo-keyboard-last-mode-v1';
  const css=`
 .wt-input-ui{position:relative;z-index:15;width:200px;box-sizing:border-box;margin:-24px 0 5px;color:#8e5e43;font:11px "Microsoft YaHei",sans-serif;pointer-events:auto;user-select:none;touch-action:none}
+.pet-info-container.wt-info-with-keyboard{width:200px;height:32px;margin-top:8px;align-self:center;flex-shrink:0;z-index:16}.pet-info-container.wt-info-with-keyboard.wt-keyboard-collapsed{margin-top:-21px}.wt-info-with-keyboard .pet-info{flex:1 1 0;min-width:0;width:auto}.wt-info-with-keyboard .pet-info .text{padding-left:8px;font-size:16px;white-space:nowrap;text-overflow:ellipsis}.wt-info-with-keyboard .wt-keyboard-toggle{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:0 0 28px;width:28px;height:28px;box-sizing:border-box;padding:0;margin:0 4px 0 0;border:1px solid #e7b77c;border-radius:14px;background:#fff3dd;color:#8e5e43;cursor:pointer;line-height:1;filter:none}.wt-keyboard-toggle[aria-expanded=true]{background:#fed291}.wt-keyboard-toggle svg{display:block;width:21px;height:17px;pointer-events:none}.wt-input-ui>.wt-status{position:static;display:block;height:auto;margin:0;line-height:15px;white-space:normal;clear:both}
 .wt-input-ui *{box-sizing:border-box}.wt-input-toolbar{display:flex;align-items:center;gap:4px;padding:0 7px 4px}.wt-input-ui button,.wt-input-ui a{position:static;font:inherit;color:#8e5e43;line-height:1.3;text-align:center;text-decoration:none;cursor:pointer;border:1px solid #e7b77c;border-radius:10px;background:#fff3dd;padding:3px 7px;min-width:0;height:auto;filter:none;white-space:nowrap}.wt-input-ui button:disabled{opacity:.55;cursor:default}.wt-input-ui button[aria-pressed=true]{background:#fed291}.wt-input-ui .wt-close{margin-left:auto;padding:1px 6px}.wt-keyboard-plate{position:relative;border:2px solid #b88764;border-bottom-width:5px;border-radius:18px 19px 21px 15px;padding:8px 7px 6px;background:linear-gradient(160deg,#fff8e9,#ffdcaa);box-shadow:0 3px 0 #ead3b7,0 5px 7px #8e5e4320;transform:perspective(480px) rotateX(12deg);transform-origin:50% 100%}.wt-keyboard-plate:before{content:'';position:absolute;width:14px;height:5px;left:15px;top:-5px;border-radius:4px;background:#e7b77c;border:1px solid #b88764}.wt-keyboard-plate:after{content:'';position:absolute;width:8px;height:8px;right:9px;bottom:7px;border-radius:50%;background:#c8dcc4;border:1px solid #9eb397}.wt-key-row{display:flex;justify-content:center;gap:3px;margin:3px 0}.wt-input-ui kbd{display:flex;align-items:center;justify-content:center;position:relative;flex:none;width:15px;height:19px;border:1px solid #be9879;border-bottom-width:3px;border-radius:5px 5px 6px 5px;background:#fffaf0;color:#8e5e43;font:bold 9px "Microsoft YaHei",sans-serif;box-shadow:0 1px 0 #f0cca3;transition:background .06s,transform .06s,box-shadow .06s}.wt-input-ui kbd.wt-key-on{background:#ffc977;color:#6e452d;border-color:#ba8050;transform:translateY(2px);box-shadow:0 0 5px #ffe391,0 0 0 1px #ffe391}.wt-qer-board{display:flex;gap:8px;align-items:center;padding:4px 3px}.wt-qer-left{width:111px}.wt-qer-row{display:flex;gap:5px}.wt-qer-board kbd{width:33px;height:30px;border-radius:8px;font-size:14px}.wt-qer-board kbd.wt-space{width:109px;height:23px;margin-top:5px;font-size:10px}.wt-mouse{display:flex;width:52px;height:59px;border:2px solid #b88764;border-bottom-width:4px;border-radius:20px 20px 16px 16px;background:#f4e1c8;overflow:hidden}.wt-mouse kbd{width:24px;height:54px;border:0;border-radius:16px 0 0 12px;font-size:9px;box-shadow:none;writing-mode:vertical-rl}.wt-mouse kbd+ kbd{border-left:1px solid #be9879;border-radius:0 16px 12px 0}.wt-record-controls{display:flex;gap:4px;align-items:center;margin-top:8px}.wt-record-controls button{flex:1;background:#fed291}.wt-input-ui .wt-record-button{background:#fff0e8;border-color:#d39d87}.wt-is-recording .wt-record-button{background:#ffd4cc;border-color:#c87664}.wt-status{font-size:10px;line-height:1.45;min-height:15px;padding:5px 6px 0;overflow-wrap:anywhere}.wt-is-recording .wt-status:before{content:'● ';color:#c85545}.wt-export-controls{display:flex;gap:4px;flex-wrap:wrap;margin:5px 4px}.wt-export-controls a{background:#e6efda}.wt-input-ui .wt-event-count{font-variant-numeric:tabular-nums}.wt-letter-label{font-size:9px;text-align:center;color:#af8a6e;margin-top:3px;letter-spacing:2px}
 `;
  function readMode(){try{const value=localStorage.getItem(storageKey);return modes.includes(value)?value:'letters'}catch{return 'letters'}}
+ function lastMode(){try{const value=localStorage.getItem(lastModeKey);return value==='wuwa'?'wuwa':'letters'}catch{return 'letters'}}
  function saveMode(mode){if(!modes.includes(mode))return;try{localStorage.setItem(storageKey,mode)}catch{}return emit('wt-keyboard-config',{mode}).catch(()=>{})}
  function settings(ref,toast){const model={mode:ref(readMode())};model.set=mode=>{model.mode.value=mode;saveMode(mode);toast('键盘映射已切换')};return model}
  function renderSettings(h,model){
@@ -15,7 +18,7 @@ const __wtKeyboardUi=(()=>{
   ]);
  }
  function create(deps={}){
-  const doc=deps.document??document,core=__wtInputRecorder.create(deps.recorderOptions);let mode=readMode(),root=null,status=null,recordButton=null,exportsBox=null,stopListen=null,ticker=null,disposed=false;
+  const doc=deps.document??document,core=__wtInputRecorder.create(deps.recorderOptions);let mode=readMode(),previousMode=mode==='hidden'?lastMode():mode,root=null,status=null,recordButton=null,exportsBox=null,counter=null,expandButton=null,stopListen=null,ticker=null,disposed=false;
   const keys=new Map(),onAt=new Map(),timers=new Map(),urls=[];
   function allow(){return !deps.blocked?.()}
   function layout(){deps.layout?.()}
@@ -31,6 +34,7 @@ const __wtKeyboardUi=(()=>{
   function refresh(){
    if(!root)return;
    if(core.active&&deps.visible&&!deps.visible()){finish('pet_hidden');return}
+   if(expandButton){const expanded=mode!=='hidden';expandButton.setAttribute('aria-expanded',String(expanded));expandButton.setAttribute('aria-label',expanded?'收起键盘':'展开键盘');expandButton.title=expanded?'收起键盘':'展开键盘';counter.classList.toggle('wt-keyboard-collapsed',!expanded)}
    root.classList.toggle('wt-is-recording',core.active);
    root.querySelectorAll('[data-mode]').forEach(node=>{node.disabled=core.active;node.setAttribute('aria-pressed',String(node.dataset.mode===mode))});
    if(recordButton)recordButton.textContent=core.active?'结束录制':'开始录制';
@@ -56,11 +60,11 @@ const __wtKeyboardUi=(()=>{
   }
   function render(){
    if(!root)return;
-   for(const timer of timers.values())clearTimeout(timer);timers.clear();keys.clear();onAt.clear();root.replaceChildren();recordButton=null;exportsBox=null;
-   root.hidden=mode==='hidden';if(root.hidden){layout();return}
+   for(const timer of timers.values())clearTimeout(timer);timers.clear();keys.clear();onAt.clear();root.replaceChildren();status=null;recordButton=null;exportsBox=null;
+   root.hidden=mode==='hidden';refresh();if(root.hidden){layout();return}
    const toolbar=doc.createElement('div');toolbar.className='wt-input-toolbar';root.append(toolbar);
    for(const[value,label]of [['letters','26键'],['wuwa','鸣潮专属']]){const item=button(label,()=>setMode(value),toolbar);item.dataset.mode=value}
-   const close=button('×',()=>setMode('hidden'),toolbar);close.className='wt-close';close.title='隐藏键盘，可在设置中重新开启';
+   const close=button('×',()=>setMode('hidden'),toolbar);close.className='wt-close';close.title='收起键盘，可从计数器左侧展开';
    const plate=doc.createElement('div');plate.className='wt-keyboard-plate';root.append(plate);
    if(mode==='letters'){
     for(const row of ['QWERTYUIOP','ASDFGHJKL','ZXCVBNM']){const container=doc.createElement('div');container.className='wt-key-row';plate.append(container);for(const key of row)makeKey(key,key,container)}
@@ -78,7 +82,7 @@ const __wtKeyboardUi=(()=>{
   function setMode(value,external=false){
    if(!modes.includes(value)||disposed)return;
    if(core.active&&value!=='wuwa')finish('mode_changed');
-   mode=value;if(!external)saveMode(value);render();
+   mode=value;if(value!=='hidden'){previousMode=value;try{localStorage.setItem(lastModeKey,value)}catch{}}if(!external)saveMode(value);render();
   }
   function key(raw,down,options={}){
    if(!root)return;
@@ -88,7 +92,7 @@ const __wtKeyboardUi=(()=>{
    if(changed)paint(normalized,down);if(before&&!core.active)exportResult(core.last);
   }
   function inside(point){
-   if(!root||!point)return false;const local=deps.toClient?.(point.x,point.y);if(!local)return false;const rect=root.getBoundingClientRect();return local.x>=rect.left&&local.x<=rect.right&&local.y>=rect.top&&local.y<=rect.bottom;
+   if(!root||!point)return false;const local=deps.toClient?.(point.x,point.y);if(!local)return false;return [root,expandButton].some(node=>{if(!node)return false;const rect=node.getBoundingClientRect();return rect.width>0&&rect.height>0&&local.x>=rect.left&&local.x<=rect.right&&local.y>=rect.top&&local.y<=rect.bottom});
   }
   function mouse(buttonName,action,point){key(buttonName==='left'?'MouseLeft':buttonName==='right'?'MouseRight':'',action==='press',{control:inside(point)})}
   function domKey(event){if(deps.hotkeys?.editable(event.target))return;key(event.code||event.key,event.type==='keydown',{control:deps.hotkeys?.fromEvent?.(event)==='record'})}
@@ -97,13 +101,18 @@ const __wtKeyboardUi=(()=>{
    const dock=doc.querySelector('.pet-dock-content');if(!dock)throw Error('Pet dock not mounted');
    if(!doc.getElementById('wt-input-style')){const style=doc.createElement('style');style.id='wt-input-style';style.textContent=css;doc.head.append(style)}
    root=doc.createElement('section');root.className='wt-input-ui';root.setAttribute('aria-label','桌面键盘映射');
+   root.id='wt-input-keyboard';
    root.addEventListener('mousedown',event=>{event.stopPropagation();if(event.target.closest('button'))event.preventDefault()});root.addEventListener('click',event=>event.stopPropagation());root.addEventListener('contextmenu',event=>{event.preventDefault();event.stopPropagation()});
-   dock.insertBefore(root,dock.querySelector('.pet-info-container'));render();
+   counter=dock.querySelector('.pet-info-container');if(!counter)throw Error('Pet counter not mounted');counter.classList.add('wt-info-with-keyboard');
+   expandButton=button('',()=>setMode(mode==='hidden'?previousMode:'hidden'),counter);expandButton.className='wt-keyboard-toggle';expandButton.setAttribute('aria-controls',root.id);
+   expandButton.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 18" aria-hidden="true"><rect x="1" y="1" width="22" height="16" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 5h2m3 0h2m3 0h2M5 8.5h2m3 0h2m3 0h2M7 12h10" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>';
+   expandButton.addEventListener('mousedown',event=>{event.preventDefault();event.stopPropagation()});expandButton.addEventListener('click',event=>event.stopPropagation());counter.insertBefore(expandButton,counter.firstChild);
+   dock.insertBefore(root,counter);render();
    doc.addEventListener('keydown',domKey,true);doc.addEventListener('keyup',domKey,true);
    if(deps.listen)stopListen=await deps.listen('wt-keyboard-config',event=>{if(event.payload?.mode!==mode)setMode(event.payload?.mode,true)});
    ticker=setInterval(refresh,200);
   }
-  function dispose(){disposed=true;if(core.active)core.stop('app_closed');stopListen?.();clearInterval(ticker);doc.removeEventListener('keydown',domKey,true);doc.removeEventListener('keyup',domKey,true);for(const timer of timers.values())clearTimeout(timer);revoke();core.clear();root?.remove();root=null}
+  function dispose(){disposed=true;if(core.active)core.stop('app_closed');stopListen?.();clearInterval(ticker);doc.removeEventListener('keydown',domKey,true);doc.removeEventListener('keyup',domKey,true);for(const timer of timers.values())clearTimeout(timer);revoke();core.clear();root?.remove();expandButton?.remove();counter?.classList.remove('wt-info-with-keyboard','wt-keyboard-collapsed');root=null}
   return {mount,dispose,key,mouse,toggle,setMode,get recording(){return core.active},get last(){return core.last}};
  }
  return {create,settings,renderSettings,readMode,css};
