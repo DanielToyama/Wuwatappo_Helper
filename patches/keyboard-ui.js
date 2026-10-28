@@ -45,7 +45,7 @@ const __wtKeyboardUi=(()=>{
   function exportResult(result){
    revoke();if(!exportsBox||!result)return;
    const stamp=result.started_at.replace(/[:.]/g,'-');
-   for(const[extension,type,content]of [['json','application/json',JSON.stringify(result,null,2)],['csv','text/csv;charset=utf-8',__wtInputRecorder.csv(result)]]){
+   for(const[extension,type,content]of [['txt','text/plain;charset=utf-8',__wtInputRecorder.txt(result)]]){
     const url=URL.createObjectURL(new Blob([content],{type}));urls.push(url);const link=doc.createElement('a');link.href=url;link.download='Wuwa-操作录制-'+stamp+'.'+extension;link.textContent='导出 '+extension.toUpperCase();exportsBox.append(link);
    }
    refresh();if(result.stop_reason==='event_limit'&&status)status.textContent='条目已达上限，录制已结束，请导出';layout();

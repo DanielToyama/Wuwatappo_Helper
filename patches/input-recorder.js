@@ -50,11 +50,13 @@ const __wtInputRecorder=(()=>{
   function clear(){stop('cleared');held.clear();recorded.clear();events=[];last=null}
   return {start,stop,input,clear,get active(){return active},get held(){return new Set(held)},get count(){return events.length},get duration(){return active?time():last?.duration_ms??0},get last(){return last}};
  }
- function csv(recording){
-  const fields=['index','time_ms','device','key','action','hold_ms','synthetic','reason'];
-  const cell=value=>{const text=value==null?'':String(value);return /[",\r\n]/.test(text)?'"'+text.replace(/"/g,'""')+'"':text};
-  return '\uFEFF'+[fields.join(','),...recording.events.map(event=>fields.map(key=>cell(event[key])).join(','))].join('\r\n')+'\r\n';
+ function txt(recording){
+  const labels={Space:'空格',MouseLeft:'鼠标左键',MouseRight:'鼠标右键'},label=key=>labels[key]??key;
+  const lines=['鸣潮专属操作录制','开始时间（UTC）：'+recording.started_at,'总时长：'+recording.duration_ms+' 毫秒','事件条数：'+recording.events.length,'结束原因：'+recording.stop_reason,'录制按键：'+recording.allowed_keys.map(label).join(' / '),'时间基准：应用收到事件后，从开始录制起计算的毫秒数。','','序号\t时间（毫秒）\t按键\t动作\t按住（毫秒）\t备注'];
+  for(const event of recording.events)lines.push([event.index,event.time_ms,label(event.key),event.action==='press'?'按下':'松开',event.hold_ms??'',event.synthetic?'停止录制时补记（非实际松开）':''].join('\t'));
+  return '\uFEFF'+lines.join('\r\n')+'\r\n';
  }
- return {allowed,normalize,create,csv};
+ return {allowed,normalize,create,txt};
+
 })();
 export {__wtInputRecorder};
