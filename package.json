@@ -1,6 +1,6 @@
 {
   "name": "wuwatappo-helper",
-  "version": "1.2.1",
+  "version": "1.0.2-1",
   "private": true,
   "description": "Non-official WuwaTappo 1.0.2 helper patches and Windows packaging",
   "scripts": {
@@ -10,5 +10,6 @@
   "devDependencies": {
     "@napi-rs/canvas": "0.1.100",
     "playwright": "1.62.1"
-  }
+  },
+  "releaseVersion": "1.0.2.1"
 }

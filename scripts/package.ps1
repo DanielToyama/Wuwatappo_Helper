@@ -2,7 +2,8 @@ param([Parameter(Mandatory=$true)][string]$IsccPath)
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $distDir = Join-Path $repoRoot 'dist'
-$helperVersion = (Get-Content -LiteralPath (Join-Path $repoRoot 'package.json') -Raw | ConvertFrom-Json).version
+$taskPackage = Get-Content -LiteralPath (Join-Path $repoRoot 'package.json') -Raw | ConvertFrom-Json
+$helperVersion = if ($taskPackage.releaseVersion) { $taskPackage.releaseVersion } else { $taskPackage.version }
 $compilerFile = (Resolve-Path -LiteralPath $IsccPath).Path
 & $compilerFile ('/DSourceDir=' + $distDir) ('/DOutputDir=' + $distDir) ('/DAppVersion=' + $helperVersion) (Join-Path $repoRoot 'installer/Wuwatappo_Helper.iss')
 if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }

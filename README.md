@@ -4,9 +4,9 @@
 
 WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、配件、表情及界面素材的权利归各自权利人所有。
 
-当前为 **Helper 1.2.1 预览版**，适配官方 1.0.2。
+当前为 **Helper 1.0.2.1 预览版**，适配官方 1.0.2。
 
-[下载安装包](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.2.1/Wuwatappo_Helper-1.2.1-Setup.exe) · [下载免安装版](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.2.1/Wuwatappo_Helper-1.2.1-Portable.zip)
+[下载安装包](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.1/Wuwatappo_Helper-1.0.2.1-Setup.exe) · [下载免安装版](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.1/Wuwatappo_Helper-1.0.2.1-Portable.zip)
 
 [此前已发布的版本](https://github.com/Fantasicrap/Wuwatappo_Helper/releases) · [使用说明](docs/使用说明.md)
 
@@ -15,11 +15,11 @@ WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、�
 ## 桌面键盘与鸣潮专属录制
 
 - 小人面前新增 26 个字母键的 QWERTY 键盘，宽度与桌宠画布一致，使用圆润键帽、奶油色底板和原界面的暖色描边；按下高亮，松开恢复。
-- 可切换为“鸣潮专属”：显示 Q/E/R、空格、鼠标左右键。计数器左侧的键盘图标可展开／收起，重新展开会恢复上次模式；设置中也可关闭键盘。
+- 可切换为“鸣潮专属”：显示 1/2/3、Q/E/R、空格、鼠标左右键。计数器左侧的键盘图标可展开／收起，重新展开会恢复上次模式；设置中也可关闭键盘。
 - 点击“开始录制”或按 **Ctrl+Alt+F10** 开始，再次触发结束。这个独立快捷键可在设置中修改，并参加已有冲突检测。
-- **只录 Q/E/R、空格、鼠标左右键**。录制状态和时长始终在键盘下显示；没有自动开始或后台隐藏录制。
+- **只录 1/2/3、Q/E/R、空格、鼠标左右键**。录制状态和时长始终在键盘下显示；没有自动开始或后台隐藏录制。
 - 结束后点击“导出 JSON”或“导出 CSV”。内容包含相对时间、按下/松开、按住时长。记录仅在本机内存中保留，不会自动上传；“清除”、退出或新一轮录制会清理上一轮数据。
-- 键盘高亮复用原程序的 `key-press` / `key-release` 与 `mouse-button` 事件。隔离浏览器已测试布局、事件适配和导出；本预览版尚未验证原生全局事件在真实游戏中的覆盖范围。
+- 键盘高亮复用原程序的 `key-press` / `key-release` 与 `mouse-button` 事件及独立右键 `wt-raw-mouse` 通道。隔离浏览器已测试布局、事件适配和导出；本预览版尚未验证原生全局事件在真实游戏中的覆盖范围。
 
 ## 库存分享
 
@@ -40,7 +40,7 @@ WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、�
 ## 安装与使用
 
 1. 退出正在运行的 WuwaTappo 或旧版修改程序。
-2. 下载并运行 `Wuwatappo_Helper-1.2.1-Setup.exe`，选择安装目录；桌面快捷方式可选。也可解压免安装版后运行 `Wuwatappo_Helper.exe`。
+2. 下载并运行 `Wuwatappo_Helper-1.0.2.1-Setup.exe`，选择安装目录；桌面快捷方式可选。也可解压免安装版后运行 `Wuwatappo_Helper.exe`。
 3. 登录并打开库存，等库存加载结束后点击“分享库存长图”。
 4. 生成完成后点击“保存 PNG”或“复制图片”。
 
@@ -50,7 +50,7 @@ WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、�
 
 已完成隔离逻辑测试、排序及五列分页测试、使用原版底图的离线 PNG 排版检查、JavaScript 语法检查和 EXE 资源独立解压核验。安装包会进行独立目录安装和文件摘要检查。
 
-新增键盘已通过隔离浏览器测试：26 键布局与尺寸、按键高亮、六键录制、控件点击排除、JSON/CSV 实际下载及生命周期清理。原生窗口遮盖、系统全局事件在真实游戏中的完整性、WebView 中保存与复制、真实账号宝箱领取尚未经自动化实机验证。离线测试图片是示例素材，不是用户账号库存。程序更新后需要重新适配，不能将本补丁直接用于其他原件。
+新增键盘已通过隔离浏览器测试：26 键布局与尺寸、按键高亮、九键录制、控件点击排除、JSON/CSV 实际下载及生命周期清理。原生窗口遮盖、系统全局事件在真实游戏中的完整性、WebView 中保存与复制、真实账号宝箱领取尚未经自动化实机验证。离线测试图片是示例素材，不是用户账号库存。程序更新后需要重新适配，不能将本补丁直接用于其他原件。
 
 本版本只适配以下原始文件：
 

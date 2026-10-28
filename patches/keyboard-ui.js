@@ -14,7 +14,7 @@ const __wtKeyboardUi=(()=>{
   return h('div',{style:{padding:'12px 0',borderTop:'1px solid #EFD4B7',marginTop:'14px'}},[
    h('div',{style:{fontSize:'18px',color:'#8e5e43',marginBottom:'8px'}},'桌面键盘映射'),
    h('div',{style:{display:'flex',gap:'8px'}},[['hidden','不显示'],['letters','26 字母键'],['wuwa','鸣潮专属']].map(([mode,label])=>h('button',{type:'button',style:{position:'static',padding:'5px 12px',border:'1px solid #E7B77C',borderRadius:'14px',color:'#8e5e43',background:model.mode.value===mode?'#fed291':'#fff3dd',font:'inherit'},onClick:()=>model.set(mode)},label,4))),
-   h('div',{style:{fontSize:'12px',color:'#8e7b6a',marginTop:'8px',lineHeight:'1.5'}},'鸣潮专属只录 Q/E/R、空格、鼠标左右键；开始和结束录制使用下方独立快捷键。')
+   h('div',{style:{fontSize:'12px',color:'#8e7b6a',marginTop:'8px',lineHeight:'1.5'}},'鸣潮专属只录 1/2/3、Q/E/R、空格、鼠标左右键；开始和结束录制使用下方独立快捷键。')
   ]);
  }
  function create(deps={}){
@@ -70,9 +70,9 @@ const __wtKeyboardUi=(()=>{
     for(const row of ['QWERTYUIOP','ASDFGHJKL','ZXCVBNM']){const container=doc.createElement('div');container.className='wt-key-row';plate.append(container);for(const key of row)makeKey(key,key,container)}
     const label=doc.createElement('div');label.className='wt-letter-label';label.textContent='TAP TAP';plate.append(label);
    }else{
-    const board=doc.createElement('div');board.className='wt-qer-board';plate.append(board);const left=doc.createElement('div');left.className='wt-qer-left';board.append(left);const row=doc.createElement('div');row.className='wt-qer-row';left.append(row);for(const key of ['Q','E','R'])makeKey(key,key,row);makeKey('Space','空 格',left).classList.add('wt-space');
+    const board=doc.createElement('div');board.className='wt-qer-board';plate.append(board);const left=doc.createElement('div');left.className='wt-qer-left';board.append(left);const row=doc.createElement('div');row.className='wt-qer-row';left.append(row);const digits=doc.createElement('div');digits.className='wt-qer-row';digits.style.marginBottom='5px';left.insertBefore(digits,row);for(const key of ['1','2','3'])makeKey(key,key,digits);for(const key of ['Q','E','R'])makeKey(key,key,row);makeKey('Space','空 格',left).classList.add('wt-space');
     const mouse=doc.createElement('div');mouse.className='wt-mouse';board.append(mouse);makeKey('MouseLeft','左键',mouse);makeKey('MouseRight','右键',mouse);
-    const controls=doc.createElement('div');controls.className='wt-record-controls';root.append(controls);recordButton=button('开始录制',toggle,controls);recordButton.className='wt-record-button';recordButton.title='只录制 Q/E/R、空格与鼠标左右键';
+    const controls=doc.createElement('div');controls.className='wt-record-controls';root.append(controls);recordButton=button('开始录制',toggle,controls);recordButton.className='wt-record-button';recordButton.title='只录制 1/2/3、Q/E/R、空格与鼠标左右键';
     button('清除',()=>{if(core.active)finish('cleared');core.clear();revoke();for(const node of keys.values())node.classList.remove('wt-key-on');refresh();layout()},controls);
     exportsBox=doc.createElement('div');exportsBox.className='wt-export-controls';root.append(exportsBox);if(core.last)exportResult(core.last);
    }

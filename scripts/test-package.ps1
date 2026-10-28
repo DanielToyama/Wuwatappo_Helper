@@ -2,7 +2,8 @@ param([string]$TestRoot)
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $distDir = Join-Path $repoRoot 'dist'
-$helperVersion = (Get-Content -LiteralPath (Join-Path $repoRoot 'package.json') -Raw | ConvertFrom-Json).version
+$taskPackage = Get-Content -LiteralPath (Join-Path $repoRoot 'package.json') -Raw | ConvertFrom-Json
+$helperVersion = if ($taskPackage.releaseVersion) { $taskPackage.releaseVersion } else { $taskPackage.version }
 if (-not $TestRoot) { $TestRoot = Join-Path $distDir ('package-test-' + [Guid]::NewGuid().ToString('N')) }
 $targetPath = [System.IO.Path]::GetFullPath($TestRoot)
 $allowedRoot = [System.IO.Path]::GetFullPath($distDir) + [System.IO.Path]::DirectorySeparatorChar

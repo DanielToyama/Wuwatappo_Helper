@@ -1,9 +1,10 @@
-// Only the six explicitly selected game controls can enter a recording.
+// Only the nine explicitly selected game controls can enter a recording.
 const __wtInputRecorder=(()=>{
- const allowed=Object.freeze(['Q','E','R','Space','MouseLeft','MouseRight']);
+ const allowed=Object.freeze(['1','2','3','Q','E','R','Space','MouseLeft','MouseRight']);
  function normalize(raw){
   const text=String(raw&&typeof raw==='object'?(raw.code??raw.key??''):raw??'');
   if(text===' ')return 'Space';
+  const digit=text.match(/^(?:Digit|Numpad|Num|Key)?([123])$/i);if(digit)return digit[1];
   if(/^(?:Key)?[a-z]$/i.test(text))return text.slice(-1).toUpperCase();
   if(/^(space|spacebar)$/i.test(text))return 'Space';
   if(/^(mouseleft|left)$/i.test(text))return 'MouseLeft';
