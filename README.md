@@ -4,11 +4,11 @@
 
 WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、配件、表情及界面素材的权利归各自权利人所有。
 
-当前为 **Helper 1.0.2.8 预览版**，适配官方 1.0.2。
+当前为 **Helper 1.0.2.9 预览版**，适配官方 1.0.2。
 
 修复 1.0.2.5 启动器报“请求的操作需要提升”的问题：保留官方内层程序的管理员权限声明，改由 Windows 正常请求 UAC 确认；取消时清理并退出。安装包本身仍无需管理员权限。
 
-[下载安装包](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.8/Wuwatappo_Helper-1.0.2.8-Setup.exe) · [下载免安装版](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.8/Wuwatappo_Helper-1.0.2.8-Portable.zip)
+[下载安装包](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.9/Wuwatappo_Helper-1.0.2.9-Setup.exe) · [下载免安装版](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.9/Wuwatappo_Helper-1.0.2.9-Portable.zip)
 
 [此前已发布的版本](https://github.com/Fantasicrap/Wuwatappo_Helper/releases) · [使用说明](docs/使用说明.md)
 
@@ -54,6 +54,10 @@ WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、�
 - 显示拥有数量、角色名和系列名；支持预览、保存 PNG、复制图片和取消生成。
 - 不受当前筛选条件或滚动位置影响；素材加载失败会明确标记；特别大的库存会分段导出。
 
+## 六槽表情快捷键
+
+Ctrl+Alt+1～6 发送表情菜单中对应槽位当前装备的表情，无需展开菜单；更换装备后自动跟随。可在快捷键设置中逐项修改或禁用，支持冲突提醒，保留旧版自定义键位。复用原版鼠标发送流程，离线仅本地显示，联机送达仍由官方连接决定。
+
 ## 其他功能
 
 - 设置面板请求取消置顶、显示在任务栏，点击外部保留面板，保留关闭按钮。
@@ -65,7 +69,7 @@ WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、�
 ## 安装与使用
 
 1. 退出正在运行的 WuwaTappo 或旧版修改程序。
-2. 下载并运行 `Wuwatappo_Helper-1.0.2.8-Setup.exe`，选择安装目录；桌面快捷方式可选。也可解压免安装版后运行 `Wuwatappo_Helper.exe`。
+2. 下载并运行 `Wuwatappo_Helper-1.0.2.9-Setup.exe`，选择安装目录；桌面快捷方式可选。也可解压免安装版后运行 `Wuwatappo_Helper.exe`。
 3. 登录并打开库存，等库存加载结束后点击“分享库存长图”。
 4. 生成完成后点击“保存 PNG”或“复制图片”。
 

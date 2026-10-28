@@ -1,6 +1,7 @@
 const __wtHotkeys=(()=>{
  const key="wuwatappo-hotkeys-v1";
- const actions=[{id:"game",label:"游戏模式",defaultKey:"F7"},{id:"monitor",label:"切换屏幕",defaultKey:"F8"},{id:"visibility",label:"显示／隐藏桌宠",defaultKey:"F9"},{id:"reload",label:"刷新界面",defaultKey:"F5"},{id:"record",label:"鸣潮录制开始／结束",defaultKey:"Ctrl+Alt+F10"}];
+ const actions=[{id:"game",label:"游戏模式",defaultKey:"F7"},{id:"monitor",label:"切换屏幕",defaultKey:"F8"},{id:"visibility",label:"显示／隐藏桌宠",defaultKey:"F9"},{id:"reload",label:"刷新界面",defaultKey:"F5"},{id:"record",label:"录制开始／结束",defaultKey:"Ctrl+Alt+F10"}];
+ for(let slot=1;slot<=6;slot++)actions.push({id:"emote"+slot,label:"发送表情 · 槽位 "+slot,defaultKey:"Ctrl+Alt+"+slot});
  const defaults=()=>Object.fromEntries(actions.map(a=>[a.id,a.defaultKey]));
  const pressed=new Map();let localCapture=false;const owner="hk-"+Math.random().toString(36).slice(2);
  function normalizeKey(raw){
@@ -33,7 +34,7 @@ const __wtHotkeys=(()=>{
   }
   return{errors,warnings};
  }
- function read(){try{const saved=JSON.parse(localStorage.getItem(key)||"null");const result={...defaults(),...saved};if(saved&&!Object.hasOwn(saved,"record")&&actions.some(a=>a.id!=="record"&&canonical(result[a.id])===result.record))result.record="";return validate(result).errors.length?defaults():result}catch{return defaults()}}
+ function read(){try{const saved=JSON.parse(localStorage.getItem(key)||"null");const result={...defaults(),...saved};if(saved)for(const action of actions)if(!Object.hasOwn(saved,action.id)&&actions.some(a=>Object.hasOwn(saved,a.id)&&canonical(result[a.id])===result[action.id]))result[action.id]="";return validate(result).errors.length?defaults():result}catch{return defaults()}}
  function actionFor(chord){const config=read();return actions.find(a=>config[a.id]&&canonical(config[a.id])===chord)?.id||null}
  function fromEvent(event){
   if(event.metaKey||event.repeat)return null;
@@ -75,7 +76,7 @@ const __wtHotkeys=(()=>{
    ])),
    h("div",{style:{display:"flex",gap:"8px",marginTop:"10px"}},[h("button",{type:"button",style:button,onClick:model.save},"保存快捷键"),h("button",{type:"button",style:button,onClick:model.reset},"恢复默认")]),
    h("div",{role:"status",style:{fontSize:"12px",lineHeight:"1.5",marginTop:"8px",color:model.error.value?"#b33a25":"#8e7b6a"}},model.message.value,5),
-   h("div",{style:{fontSize:"12px",lineHeight:"1.5",color:"#8e7b6a",marginTop:"6px"}},"冲突检测覆盖本程序；系统和其他软件占用无法完全检测。")
+   h("div",{style:{fontSize:"12px",lineHeight:"1.5",color:"#8e7b6a",marginTop:"6px"}},"表情槽位按菜单顺序对应当前装备；无需展开菜单。冲突检测覆盖本程序，其他软件占用无法完全检测。")
   ]);
  }
  if(typeof window!=="undefined"){

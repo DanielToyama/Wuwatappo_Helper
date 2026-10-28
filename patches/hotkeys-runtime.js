@@ -1,6 +1,12 @@
 const __wtHotkeyCaptureOwners=new Map();
 let __wtHotkeyStopAction=null,__wtHotkeyStopCapture=null;
 const __wtHotkeyLast=new Map();
+function __wtSendEmoteSlot(slot){
+ if(Ie()||!Number.isInteger(slot)||slot<1||slot>6)return;
+ const item=Fa.value[slot-1];
+ if(!item||!Number.isFinite(item.id)||item.id<=0||typeof item.name!=="string"||!item.name.trim()){yt("表情槽位 "+slot+" 未配置");return}
+ _p({id:item.id,src:te("emote/"+item.name)});
+}
 function __wtPerformHotkey(action){
  const capturedNow=Date.now();for(const[owner,until]of __wtHotkeyCaptureOwners)if(until<=capturedNow)__wtHotkeyCaptureOwners.delete(owner);
  if(!__wtHotkeys.actions.some(item=>item.id===action)||__wtHotkeyCaptureOwners.size||Ie())return;
@@ -12,6 +18,7 @@ function __wtPerformHotkey(action){
  else if(action==="monitor"){if(Iv())Mv()}
  else if(action==="reload")Rn().finally(ly);
  else if(action==="record"&&typeof __wtKeyboard!=="undefined")__wtKeyboard.toggle();
+ else if(/^emote[1-6]$/.test(action))__wtSendEmoteSlot(Number(action.slice(5)));
 }
 function __wtNativeHotkeyDown(raw){const action=__wtHotkeys.nativeDown(raw);if(action)__wtPerformHotkey(action);return action}
 function __wtNativeHotkeyUp(raw){__wtHotkeys.nativeUp(raw)}

@@ -20,6 +20,7 @@ cp.execFileSync(process.execPath,[path.join(__dirname,'test-auto-chest.cjs')],{s
 if(withRoomVisibility)cp.execFileSync(process.execPath,[path.join(__dirname,'test-room-visibility.cjs')],{stdio:'pipe'});
 if(withHelperRelease)cp.execFileSync(process.execPath,[path.join(__dirname,'test-room-history.cjs')],{stdio:'pipe'});
 if(withHotkeys)cp.execFileSync(process.execPath,[path.join(__dirname,'test-hotkeys.cjs')],{stdio:'pipe'});
+if(withHotkeys)cp.execFileSync(process.execPath,[path.join(__dirname,'test-emote-hotkeys.cjs')],{stdio:'pipe'});
 if(withScreenshotFix)cp.execFileSync(process.execPath,[path.join(__dirname,'test-panel-capture.cjs')],{stdio:'pipe'});
 if(withInventoryShare)cp.execFileSync(process.execPath,[path.join(__dirname,'test-inventory-share.cjs')],{stdio:'pipe'});
 if(withKeyboard)cp.execFileSync(process.execPath,[path.join(__dirname,'test-input-recorder.cjs')],{stdio:'pipe'});
