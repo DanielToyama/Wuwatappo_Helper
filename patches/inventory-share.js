@@ -34,10 +34,10 @@ const __wtInventoryShare=(()=>{
     }
     return kinds.map(([type,title])=>({type,title,items:[...found.values()].filter(item=>item.asset_type===type).sort(compare)}));
   }
-  function layout(groups,limit=maxHeight){
+  function layout(groups,limit=maxHeight,top=144){
     if(limit<440)throw Error('图片高度限制过小');
-    const pages=[];let page={blocks:[],y:144};
-    const finish=()=>{page.height=page.y+40;pages.push(page);page={blocks:[],y:144}};
+    const pages=[];let page={blocks:[],y:top};
+    const finish=()=>{page.height=page.y+40;pages.push(page);page={blocks:[],y:top}};
     for(const group of groups){
       let index=0,continued=false;
       do{
@@ -98,7 +98,8 @@ const __wtInventoryShare=(()=>{
       ctx.font='17px "Microsoft YaHei", sans-serif';
       ctx.fillText(groups.map(group=>group.title+' '+group.items.length+' 种').join('　'),pad,80);
       const labels={epic:'Epic',rare:'Rare',uncommon:'Uncommon',common:'Common'};
-      rarityOrder.forEach((rarity,index)=>{const x=pad+index*170;ctx.drawImage(options.background.frames[rarity],x,96,26,23);ctx.fillText(labels[rarity],x+34,114)});
+      if(!options.luck)rarityOrder.forEach((rarity,index)=>{const x=pad+index*170;ctx.drawImage(options.background.frames[rarity],x,96,26,23);ctx.fillText(labels[rarity],x+34,114)});
+      if(options.luck)options.luck.module.draw(ctx,options.luck.data);
       for(const block of page.blocks){
         ctx.font='bold 25px "Microsoft YaHei", sans-serif';ctx.fillStyle='#8e5e43';ctx.fillText(block.title+'  /  '+block.total+' 种',pad,block.y+31);
         if(!block.items.length){ctx.font='18px "Microsoft YaHei", sans-serif';ctx.fillText('暂无已拥有的'+block.title,pad,block.y+95)}
@@ -168,11 +169,11 @@ const __wtInventoryShare=(()=>{
       if(!total){notify('当前没有可分享的库存');return}
       busy.value=true;const controller=new AbortController(),ui=preview(document,()=>controller.abort());let bg;
       try{
-        label.value='正在生成…';ui.status('正在读取 WuwaTappo 背景…');bg=await background(document,controller.signal);
-        const pages=layout(groups),date=new Date(),timestamp=date.toLocaleString(),stamp=date.toISOString().replace(/[:.]/g,'-');let done=0,failed=0;
+        label.value='正在生成…';const module=await import('http://127.0.0.1:48642/ui.js'),luck={module:module.InventoryLuck,data:await module.InventoryLuck.prepare(groups,snapshot.user,()=>userInfo().then(unwrapApiData),()=>get().user)};ui.status('正在读取 WuwaTappo 背景…');bg=await background(document,controller.signal);
+        const pages=layout(groups,maxHeight,module.InventoryLuck.headerHeight),date=new Date(),timestamp=date.toLocaleString(),stamp=date.toISOString().replace(/[:.]/g,'-');let done=0,failed=0;
         for(let index=0;index<pages.length;index++){
           if(controller.signal.aborted)throw Error('已取消生成');
-          const result=await draw(pages[index],groups,{document,background:bg,signal:controller.signal,loadImage:url=>image(url,controller.signal),resolveUrl:item=>resolveBagAppearanceImageUrl(snapshot.host,item),timestamp,pageLabel:(index+1)+' / '+pages.length,progress(){done++;ui.status('正在生成 '+done+' / '+total)}});
+          const result=await draw(pages[index],groups,{document,luck,background:bg,signal:controller.signal,loadImage:url=>image(url,controller.signal),resolveUrl:item=>resolveBagAppearanceImageUrl(snapshot.host,item),timestamp,pageLabel:(index+1)+' / '+pages.length,progress(){done++;ui.status('正在生成 '+done+' / '+total)}});
           if(controller.signal.aborted)throw Error('已取消生成');
           failed+=result.failed;ui.add(result,'WuwaTappo-库存-'+stamp+(pages.length>1?'-'+(index+1):'')+'.png');
         }

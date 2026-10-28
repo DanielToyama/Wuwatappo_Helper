@@ -5,7 +5,7 @@
   #define OutputDir "..\dist"
 #endif
 #ifndef AppVersion
-  #define AppVersion "1.0.2.9"
+  #define AppVersion "1.0.2.10"
 #endif
 
 [Setup]
@@ -51,6 +51,7 @@ Source: "..\DISCLAIMER.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\THIRD_PARTY_NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\docs\使用说明.md"; DestDir: "{app}"; Flags: ignoreversion
 
+Source: "..\docs\库存欧非判定.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\docs\手柄使用说明.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\licenses\SDL3-LICENSE.txt"; DestDir: "{app}\licenses"; Flags: ignoreversion
 

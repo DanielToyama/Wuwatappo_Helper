@@ -19,7 +19,8 @@ $ui=[IO.File]::ReadAllText((Join-Path $repoRoot 'patches/controller-ui.js'))
 $roomCore=[IO.File]::ReadAllText((Join-Path $repoRoot 'patches/room-history-core.js'))
 $roomUi=[IO.File]::ReadAllText((Join-Path $repoRoot 'patches/room-history-ui.js'))
 $uiFile=Join-Path $hostDir 'controller-ui.js'
-[IO.File]::WriteAllText($uiFile,$core+"`n"+$ui+"`n"+$roomCore+"`n"+$roomUi,[Text.UTF8Encoding]::new($false))
+$luck=[IO.File]::ReadAllText((Join-Path $repoRoot 'patches/inventory-luck.js'))
+[IO.File]::WriteAllText($uiFile,$core+"`n"+$ui+"`n"+$roomCore+"`n"+$roomUi+"`n"+$luck,[Text.UTF8Encoding]::new($false))
 $pkg=Get-Content -LiteralPath (Join-Path $repoRoot 'package.json') -Raw|ConvertFrom-Json
 $hash=(Get-FileHash -LiteralPath $payload -Algorithm SHA256).Hash.ToLowerInvariant()
 $runtimeId=Join-Path $hostDir 'runtime-id'
