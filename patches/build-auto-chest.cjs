@@ -94,6 +94,7 @@ if(withHotkeys){
  panelText=replaceOnce(panelText,"function Bs(n){return iy.has(n)}","function Bs(n){return false}");
  panelText=replaceOnce(panelText,"function Bc(e){",withKeyboard?"function Bc(e){const __wtAction=__wtNativeHotkeyDown(e);__wtKeyboard.key(e,true,{control:__wtAction===\"record\"});":"function Bc(e){__wtNativeHotkeyDown(e);");
  panelText=replaceOnce(panelText,"function Nc(e){","function Nc(e){__wtNativeHotkeyUp(e);"+(withKeyboard?"__wtKeyboard.key(e,false);":""));
+ if(withKeyboard)panelText=replaceOnce(panelText,'const ee=j.closest("button");','const ee=j.closest("button,a[download]");');
  if(withKeyboard)panelText=replaceOnce(panelText,"const t=e.payload.button,o=e.payload.action;","const t=e.payload.button,o=e.payload.action;if(t!=='right')__wtKeyboard.mouse(t,o,{x:oe.value,y:de.value});");
  panelText=replaceOnce(panelText,"ji=await lv(Yp),","ji=await lv(Yp),await __wtInstallHotkeys(),"+(withKeyboard?"await __wtKeyboard.mount(),":""));
  panelText=replaceOnce(panelText,"Ri(()=>{mh(),Tc(),","Ri(()=>{"+(withKeyboard?"__wtKeyboard.dispose();":"")+"__wtDisposeHotkeys();mh(),Tc(),");

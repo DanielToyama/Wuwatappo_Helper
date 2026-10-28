@@ -1,12 +1,13 @@
 param(
     [Parameter(Mandatory=$true)][string]$SourceExe,
-    [Parameter(Mandatory=$true)][string]$IsccPath
+    [Parameter(Mandatory=$true)][string]$IsccPath,
+    [string]$OutputDirectory
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $sourceFile = (Resolve-Path -LiteralPath $SourceExe).Path
 $compilerFile = (Resolve-Path -LiteralPath $IsccPath).Path
-$distDir = Join-Path $repoRoot 'dist'
+$distDir = if ($OutputDirectory) { [IO.Path]::GetFullPath($OutputDirectory) } else { Join-Path $repoRoot 'dist' }
 New-Item -ItemType Directory -Path $distDir -Force | Out-Null
 $previousSource = $env:WUWA_SOURCE_EXE
 try {
@@ -21,5 +22,5 @@ try {
     & node (Join-Path $PSScriptRoot 'test-migration.cjs')
     if ($LASTEXITCODE -ne 0) { throw 'Migration checks failed' }
     Copy-Item -LiteralPath (Join-Path $repoRoot 'patches/helper-release/Wuwatappo_Helper.exe') -Destination (Join-Path $distDir 'Wuwatappo_Helper.exe') -Force
-    & (Join-Path $PSScriptRoot 'package.ps1') -IsccPath $compilerFile
+    & (Join-Path $PSScriptRoot 'package.ps1') -IsccPath $compilerFile -OutputDirectory $distDir
 } finally { $env:WUWA_SOURCE_EXE = $previousSource }

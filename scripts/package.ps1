@@ -1,7 +1,7 @@
-param([Parameter(Mandatory=$true)][string]$IsccPath)
+param([Parameter(Mandatory=$true)][string]$IsccPath,[string]$OutputDirectory)
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$distDir = Join-Path $repoRoot 'dist'
+$distDir = if ($OutputDirectory) { [IO.Path]::GetFullPath($OutputDirectory) } else { Join-Path $repoRoot 'dist' }
 $taskPackage = Get-Content -LiteralPath (Join-Path $repoRoot 'package.json') -Raw | ConvertFrom-Json
 $helperVersion = if ($taskPackage.releaseVersion) { $taskPackage.releaseVersion } else { $taskPackage.version }
 $compilerFile = (Resolve-Path -LiteralPath $IsccPath).Path
