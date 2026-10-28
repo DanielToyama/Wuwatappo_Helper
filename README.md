@@ -4,17 +4,19 @@
 
 WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、配件、表情及界面素材的权利归各自权利人所有。
 
-当前为 **Helper 1.0.2.3 预览版**，适配官方 1.0.2。
+当前为 **Helper 1.0.2.4 预览版**，适配官方 1.0.2。
 
-[下载安装包](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.3/Wuwatappo_Helper-1.0.2.3-Setup.exe) · [下载免安装版](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.3/Wuwatappo_Helper-1.0.2.3-Portable.zip)
+[下载安装包](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.4/Wuwatappo_Helper-1.0.2.4-Setup.exe) · [下载免安装版](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.4/Wuwatappo_Helper-1.0.2.4-Portable.zip)
 
 [此前已发布的版本](https://github.com/Fantasicrap/Wuwatappo_Helper/releases) · [使用说明](docs/使用说明.md)
 
 右键显示和录制使用独立的原生 wt-raw-mouse 通道，覆盖桌宠内外的按下与松开，窗口内保留释放补充处理；正常长按不使用固定超时清除。自动宝箱现在等待至少 5 秒再领取。
 
+桌宠外的全局左键显示和录制已增加补充事件源，同时保留原生拖动与点击处理。26 键模式也支持空格和左右鼠标键的高亮与松开。
+
 ## 桌面键盘与鸣潮专属录制
 
-- 小人面前新增 26 个字母键的 QWERTY 键盘，宽度与桌宠画布一致，使用圆润键帽、奶油色底板和原界面的暖色描边；按下高亮，松开恢复。
+- 小人面前新增 26 个字母键的 QWERTY 键盘，额外显示空格和鼠标左右键，宽度与桌宠画布一致，使用圆润键帽、奶油色底板和原界面的暖色描边；按下高亮，松开恢复。
 - 可切换为“鸣潮专属”：显示 1/2/3、Q/E/R、空格、鼠标左右键。计数器左侧的键盘图标可展开／收起，重新展开会恢复上次模式；设置中也可关闭键盘。
 - 点击“开始录制”或按 **Ctrl+Alt+F10** 开始，再次触发结束。这个独立快捷键可在设置中修改，并参加已有冲突检测。
 - **只录 1/2/3、Q/E/R、空格、鼠标左右键**。录制状态和时长始终在键盘下显示；没有自动开始或后台隐藏录制。
@@ -40,7 +42,7 @@ WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、�
 ## 安装与使用
 
 1. 退出正在运行的 WuwaTappo 或旧版修改程序。
-2. 下载并运行 `Wuwatappo_Helper-1.0.2.3-Setup.exe`，选择安装目录；桌面快捷方式可选。也可解压免安装版后运行 `Wuwatappo_Helper.exe`。
+2. 下载并运行 `Wuwatappo_Helper-1.0.2.4-Setup.exe`，选择安装目录；桌面快捷方式可选。也可解压免安装版后运行 `Wuwatappo_Helper.exe`。
 3. 登录并打开库存，等库存加载结束后点击“分享库存长图”。
 4. 生成完成后点击“保存 PNG”或“复制图片”。
 

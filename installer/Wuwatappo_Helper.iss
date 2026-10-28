@@ -5,7 +5,7 @@
   #define OutputDir "..\dist"
 #endif
 #ifndef AppVersion
-  #define AppVersion "1.0.2.3"
+  #define AppVersion "1.0.2.4"
 #endif
 
 [Setup]
