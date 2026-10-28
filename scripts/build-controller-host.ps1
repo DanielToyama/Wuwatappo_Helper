@@ -11,17 +11,22 @@ $out=[IO.Path]::GetFullPath($OutputDirectory)
 $hostDir=Join-Path $out 'host-build'
 New-Item -ItemType Directory -Path $hostDir -Force|Out-Null
 $payload=Join-Path $repoRoot 'patches/helper-release/Wuwatappo_Helper.exe'
+. (Join-Path $PSScriptRoot 'icon-resources.ps1')
+$iconFile=Join-Path $hostDir 'application.ico'
+[IO.File]::WriteAllBytes($iconFile,[WuwaHelper.IconResources]::ReadFirst($payload))
 $core=[IO.File]::ReadAllText((Join-Path $repoRoot 'patches/controller-core.js'))
 $ui=[IO.File]::ReadAllText((Join-Path $repoRoot 'patches/controller-ui.js'))
+$roomCore=[IO.File]::ReadAllText((Join-Path $repoRoot 'patches/room-history-core.js'))
+$roomUi=[IO.File]::ReadAllText((Join-Path $repoRoot 'patches/room-history-ui.js'))
 $uiFile=Join-Path $hostDir 'controller-ui.js'
-[IO.File]::WriteAllText($uiFile,$core+"`n"+$ui,[Text.UTF8Encoding]::new($false))
+[IO.File]::WriteAllText($uiFile,$core+"`n"+$ui+"`n"+$roomCore+"`n"+$roomUi,[Text.UTF8Encoding]::new($false))
 $pkg=Get-Content -LiteralPath (Join-Path $repoRoot 'package.json') -Raw|ConvertFrom-Json
 $hash=(Get-FileHash -LiteralPath $payload -Algorithm SHA256).Hash.ToLowerInvariant()
 $runtimeId=Join-Path $hostDir 'runtime-id'
 [IO.File]::WriteAllText($runtimeId,($pkg.releaseVersion+'-'+$hash.Substring(0,12)))
 $exe=Join-Path $out 'Wuwatappo_Helper.exe'
 $license=Join-Path $repoRoot 'licenses/SDL3-LICENSE.txt'
-& $compiler /nologo /target:winexe /platform:x64 /optimize+ /reference:System.Web.Extensions.dll /reference:System.Windows.Forms.dll /reference:System.Core.dll ('/out:'+$exe) ('/resource:'+$payload+',WuwaTappo.exe') ('/resource:'+$SdlPath+',SDL3.dll') ('/resource:'+$license+',SDL3-LICENSE.txt') ('/resource:'+$uiFile+',controller-ui.js') ('/resource:'+$runtimeId+',runtime-id') (Join-Path $repoRoot 'native/ControllerHost.cs')
+& $compiler /nologo /target:winexe /platform:x64 /optimize+ ('/win32icon:'+$iconFile) /reference:System.Web.Extensions.dll /reference:System.Windows.Forms.dll /reference:System.Core.dll ('/out:'+$exe) ('/resource:'+$payload+',WuwaTappo.exe') ('/resource:'+$SdlPath+',SDL3.dll') ('/resource:'+$license+',SDL3-LICENSE.txt') ('/resource:'+$uiFile+',controller-ui.js') ('/resource:'+$runtimeId+',runtime-id') (Join-Path $repoRoot 'native/ControllerHost.cs')
 if($LASTEXITCODE -ne 0){throw 'Controller launcher compilation failed'}
 $asm=[Reflection.Assembly]::LoadFile($exe)
 $checks=@{}

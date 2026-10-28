@@ -5,7 +5,7 @@
   #define OutputDir "..\dist"
 #endif
 #ifndef AppVersion
-  #define AppVersion "1.0.2.6"
+  #define AppVersion "1.0.2.7"
 #endif
 
 [Setup]
@@ -28,6 +28,7 @@ Compression=lzma2
 SolidCompression=yes
 OutputDir={#OutputDir}
 OutputBaseFilename=Wuwatappo_Helper-{#AppVersion}-Setup
+SetupIconFile={#SourceDir}\host-build\application.ico
 UninstallDisplayIcon={app}\Wuwatappo_Helper.exe
 LicenseFile=..\DISCLAIMER.txt
 InfoAfterFile=..\docs\使用说明.md

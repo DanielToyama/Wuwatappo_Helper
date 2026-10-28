@@ -7,6 +7,7 @@ $helperVersion = if ($taskPackage.releaseVersion) { $taskPackage.releaseVersion 
 $compilerFile = (Resolve-Path -LiteralPath $IsccPath).Path
 & $compilerFile ('/DSourceDir=' + $distDir) ('/DOutputDir=' + $distDir) ('/DAppVersion=' + $helperVersion) (Join-Path $repoRoot 'installer/Wuwatappo_Helper.iss')
 if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed' }
+& (Join-Path $PSScriptRoot 'test-icon.ps1') -DistributionDirectory $distDir -IncludeInstaller
 $portableDir = Join-Path $distDir 'portable/Wuwatappo_Helper'
 New-Item -ItemType Directory -Path $portableDir -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $distDir 'Wuwatappo_Helper.exe') -Destination $portableDir -Force

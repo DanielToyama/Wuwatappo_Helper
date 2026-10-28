@@ -18,6 +18,7 @@ const hash=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
 assert.equal(hash(source),config.sourceSha256,'Source is no longer the reviewed 1.0.2 executable');
 cp.execFileSync(process.execPath,[path.join(__dirname,'test-auto-chest.cjs')],{stdio:'pipe'});
 if(withRoomVisibility)cp.execFileSync(process.execPath,[path.join(__dirname,'test-room-visibility.cjs')],{stdio:'pipe'});
+if(withHelperRelease)cp.execFileSync(process.execPath,[path.join(__dirname,'test-room-history.cjs')],{stdio:'pipe'});
 if(withHotkeys)cp.execFileSync(process.execPath,[path.join(__dirname,'test-hotkeys.cjs')],{stdio:'pipe'});
 if(withScreenshotFix)cp.execFileSync(process.execPath,[path.join(__dirname,'test-panel-capture.cjs')],{stdio:'pipe'});
 if(withInventoryShare)cp.execFileSync(process.execPath,[path.join(__dirname,'test-inventory-share.cjs')],{stdio:'pipe'});
@@ -48,6 +49,15 @@ if(withRoomVisibility){
  const roomButtonStyle="{position:\"static\",display:\"inline-flex\",alignItems:\"center\",justifyContent:\"center\",boxSizing:\"border-box\",height:\"36px\",lineHeight:\"normal\",padding:\"0 12px\",margin:\"0\",minWidth:\"0\",flex:\"1 1 0\",fontSize:\"16px\",fontFamily:\"inherit\",whiteSpace:\"nowrap\",textAlign:\"center\",background:\"#fed291\",color:\"#8e5e43\",border:\"1px solid #E7B77C\",borderRadius:\"18px\",cursor:\"pointer\"}";
  const roomRow="e(\"div\",{class:\"room-bulk-visibility\",style:{display:\"flex\",alignItems:\"center\",width:\"100%\",gap:\"8px\",margin:\"12px 0\"}},[e(\"button\",{type:\"button\",class:\"wt-room-bulk-button\",style:"+roomButtonStyle+",title:\"在本机隐藏当前其他在线成员的桌宠\",onMousedown:U(()=>{},[\"stop\"]),onClick:U(()=>__wtBulkRoomVisible(false),[\"stop\"])},\"一键不可见\"),e(\"button\",{type:\"button\",class:\"wt-room-bulk-button\",style:"+roomButtonStyle+",title:\"在本机显示其他成员允许展示的桌宠\",onMousedown:U(()=>{},[\"stop\"]),onClick:U(()=>__wtBulkRoomVisible(true),[\"stop\"])},\"一键可见\")])";
  text=replaceOnce(text,"t.roomMembers.length?(l(),m(\"ul\",Ji,",roomRow+",t.roomMembers.length?(l(),m(\"ul\",Ji,");
+}
+if(withHelperRelease){
+ text=replaceOnce(text,'Ki={class:"join-rooms"}','Ki={class:"join-rooms",style:{flexWrap:"wrap"}}');
+ text=replaceOnce(text,'class:"join-rooms-input",type:"text"','class:"join-rooms-input",style:{flex:"1 1 120px",minWidth:0},type:"text"');
+ text=replaceOnce(text,'Xi={class:"room-number"}','Xi={class:"room-number",style:{flexWrap:"wrap",gap:"6px"}}');
+ text=replaceOnce(text,'class:"common-btn leave-room-btn",disabled','class:"common-btn leave-room-btn",style:{top:0,bottom:"auto",height:"30px",fontSize:"14px",padding:"0 12px",lineHeight:"normal",display:"inline-flex",alignItems:"center",justifyContent:"center"},disabled');
+ text=replaceOnce(text,'const g=x(()=>y.roomMode!=="idle");',fs.readFileSync(path.join(__dirname,'room-history-settings.js'),'utf8')+'const g=x(()=>y.roomMode!=="idle");');
+ text=replaceOnce(text,'L(h(n)("rooms_join")),9,zi)])','L(h(n)("rooms_join")),9,zi),__wtHistoryButton()])');
+ text=replaceOnce(text,'e("span",{class:"room-number-copy",role:"button",onClick:E})])','e("span",{class:"room-number-copy",role:"button",onClick:E}),__wtHistoryButton()])');
 }
 if(withHotkeys){
  text=replaceOnce(text,"const __wtAutoChestUi=", "const __wtKeySettings=__wtHotkeys.createSettings(I,He);const __wtAutoChestUi=");
@@ -84,6 +94,14 @@ if(withRoomVisibility){
  panelText=replaceOnce(panelText,"function uh(e){",roomRuntime+"function uh(e){");
  panelText=replaceOnce(panelText,"case\"toggle-room-member\":uh(e.memberId);break;",
   "case\"set-room-members-visibility\":__wtSetAllRoomMembersVisible(e.visible);break;case\"toggle-room-member\":uh(e.memberId);break;");
+}
+if(withHelperRelease){
+ panelText=replaceOnce(panelText,'function Ys(n){',fs.readFileSync(path.join(__dirname,'room-history-core.js'),'utf8')+'\nconst __wtRoomHistory=__wtRoomHistoryCore.create();\nfunction Ys(n){');
+ panelText=replaceOnce(panelText,'function Yp(e){',fs.readFileSync(path.join(__dirname,'room-history-runtime.js'),'utf8')+'function Yp(e){');
+ panelText=replaceOnce(panelText,'a.value=wd(xe?.o)?"owner":"member",We("rd",{r:u.value},at)','a.value=wd(xe?.o)?"owner":"member",xe&&A.isLoggedIn&&__wtRoomHistory.remember(Ee,u.value),We("rd",{r:u.value},at)');
+ panelText=replaceOnce(panelText,'case"join-room":dh();break;','case"join-room-history":__wtEnterHistoryRoom(e);break;case"join-room":dh();break;');
+ for(const fn of ['fh','dh','ph'])panelText=replaceOnce(panelText,'async function '+fn+'(){','async function '+fn+'(){if(__wtRoomHistory.busy){yt("正在切换房间，请稍候");return}');
+ panelText+='\nimport{cL as __wtRoomEmit}from"./'+path.basename(config.mainAsset)+'";\n';
 }
 if(withHotkeys){
  let hotkeyRuntime=fs.readFileSync(path.join(__dirname,"hotkeys-runtime.js"),"utf8");

@@ -4,17 +4,25 @@
 
 WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、配件、表情及界面素材的权利归各自权利人所有。
 
-当前为 **Helper 1.0.2.6 预览版**，适配官方 1.0.2。
+当前为 **Helper 1.0.2.7 预览版**，适配官方 1.0.2。
 
 修复 1.0.2.5 启动器报“请求的操作需要提升”的问题：保留官方内层程序的管理员权限声明，改由 Windows 正常请求 UAC 确认；取消时清理并退出。安装包本身仍无需管理员权限。
 
-[下载安装包](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.6/Wuwatappo_Helper-1.0.2.6-Setup.exe) · [下载免安装版](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.6/Wuwatappo_Helper-1.0.2.6-Portable.zip)
+[下载安装包](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.7/Wuwatappo_Helper-1.0.2.7-Setup.exe) · [下载免安装版](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.7/Wuwatappo_Helper-1.0.2.7-Portable.zip)
 
 [此前已发布的版本](https://github.com/Fantasicrap/Wuwatappo_Helper/releases) · [使用说明](docs/使用说明.md)
 
 右键显示和录制使用独立的原生 wt-raw-mouse 通道，覆盖桌宠内外的按下与松开，窗口内保留释放补充处理；正常长按不使用固定超时清除。自动宝箱现在等待至少 5 秒再领取。
 
 桌宠外的全局左键显示和录制已增加补充事件源，同时保留原生拖动与点击处理。26 键模式也支持空格和左右鼠标键的高亮与松开。
+
+## 历史房间与原版图标
+
+房间号旁新增“历史房间”，未进入房间时也可从加入区域打开。按当前账号保存本机成功加入、创建或恢复过的最近 100 个房间，点击 ID 即可进入。已在该房间会提示“你已经在该房间”；在其他房间时先等待退出成功再加入，退出失败会停止操作。账号切换会关闭历史列表并停止后续切换步骤，记录不跨账号混用。
+
+只在服务器返回有效房间成员快照、确认当前账号在房间后记录；无效、已满或关闭的房间仍由官方接口校验。历史保存在本机应用偏好中，不从服务器追溯旧记录，也不会随单 EXE 分享给别人。详细行为见[使用说明](docs/使用说明.md#历史房间)。
+
+已补回 EXE 的原版六档图标（16/24/32/48/64/256 像素），安装程序与安装后的快捷方式也使用原版图标。构建时从原件提取，逐帧核验，避免再次丢失。
 
 ## 手柄显示与录制
 
@@ -56,7 +64,7 @@ WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、�
 ## 安装与使用
 
 1. 退出正在运行的 WuwaTappo 或旧版修改程序。
-2. 下载并运行 `Wuwatappo_Helper-1.0.2.6-Setup.exe`，选择安装目录；桌面快捷方式可选。也可解压免安装版后运行 `Wuwatappo_Helper.exe`。
+2. 下载并运行 `Wuwatappo_Helper-1.0.2.7-Setup.exe`，选择安装目录；桌面快捷方式可选。也可解压免安装版后运行 `Wuwatappo_Helper.exe`。
 3. 登录并打开库存，等库存加载结束后点击“分享库存长图”。
 4. 生成完成后点击“保存 PNG”或“复制图片”。
 
