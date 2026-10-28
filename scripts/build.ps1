@@ -24,5 +24,6 @@ try {
     & (Join-Path $PSScriptRoot 'build-controller-host.ps1') -OutputDirectory $distDir
     if ($LASTEXITCODE -ne 0) { throw 'Controller launcher failed' }
     & (Join-Path $PSScriptRoot 'test-launcher.ps1') -DistributionDirectory $distDir
+    & (Join-Path $PSScriptRoot 'test-controller-events.ps1') -DistributionDirectory $distDir
     & (Join-Path $PSScriptRoot 'package.ps1') -IsccPath $compilerFile -OutputDirectory $distDir
 } finally { $env:WUWA_SOURCE_EXE = $previousSource }

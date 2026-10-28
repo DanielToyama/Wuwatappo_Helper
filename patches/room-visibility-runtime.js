@@ -1,5 +1,7 @@
 function __wtSetAllRoomMembersVisible(visible){
   if(typeof visible!=="boolean"||Ie())return;
+  __wtHideRoomPeers.value=!visible;
+  __wtShownRoomPeers.value=new Set;
   if(visible){Md()}
   else{
     const hidden=new Set(Eo.value);

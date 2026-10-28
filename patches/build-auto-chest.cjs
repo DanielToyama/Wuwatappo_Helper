@@ -47,7 +47,7 @@ if(withRoomVisibility){
  const roomUi=fs.readFileSync(path.join(__dirname,"room-visibility-ui.js"),"utf8");
  text=replaceOnce(text,"const g=x(()=>y.roomMode!==\"idle\");",roomUi+"const g=x(()=>y.roomMode!==\"idle\");");
  const roomButtonStyle="{position:\"static\",display:\"inline-flex\",alignItems:\"center\",justifyContent:\"center\",boxSizing:\"border-box\",height:\"36px\",lineHeight:\"normal\",padding:\"0 12px\",margin:\"0\",minWidth:\"0\",flex:\"1 1 0\",fontSize:\"16px\",fontFamily:\"inherit\",whiteSpace:\"nowrap\",textAlign:\"center\",background:\"#fed291\",color:\"#8e5e43\",border:\"1px solid #E7B77C\",borderRadius:\"18px\",cursor:\"pointer\"}";
- const roomRow="e(\"div\",{class:\"room-bulk-visibility\",style:{display:\"flex\",alignItems:\"center\",width:\"100%\",gap:\"8px\",margin:\"12px 0\"}},[e(\"button\",{type:\"button\",class:\"wt-room-bulk-button\",style:"+roomButtonStyle+",title:\"在本机隐藏当前其他在线成员的桌宠\",onMousedown:U(()=>{},[\"stop\"]),onClick:U(()=>__wtBulkRoomVisible(false),[\"stop\"])},\"一键不可见\"),e(\"button\",{type:\"button\",class:\"wt-room-bulk-button\",style:"+roomButtonStyle+",title:\"在本机显示其他成员允许展示的桌宠\",onMousedown:U(()=>{},[\"stop\"]),onClick:U(()=>__wtBulkRoomVisible(true),[\"stop\"])},\"一键可见\")])";
+ const roomRow="e(\"div\",{class:\"room-bulk-visibility\",style:{display:\"flex\",alignItems:\"center\",width:\"100%\",gap:\"8px\",margin:\"12px 0\"}},[e(\"button\",{type:\"button\",class:\"wt-room-bulk-button\",style:"+roomButtonStyle+",title:\"持续隐藏其他成员，包括后来加入者\",onMousedown:U(()=>{},[\"stop\"]),onClick:U(()=>__wtBulkRoomVisible(false),[\"stop\"])},\"一键不可见\"),e(\"button\",{type:\"button\",class:\"wt-room-bulk-button\",style:"+roomButtonStyle+",title:\"在本机显示其他成员允许展示的桌宠\",onMousedown:U(()=>{},[\"stop\"]),onClick:U(()=>__wtBulkRoomVisible(true),[\"stop\"])},\"一键可见\")])";
  text=replaceOnce(text,"t.roomMembers.length?(l(),m(\"ul\",Ji,",roomRow+",t.roomMembers.length?(l(),m(\"ul\",Ji,");
 }
 if(withHelperRelease){
@@ -91,6 +91,7 @@ assert(panelText.includes("case\"boost-local-clicks\":"));
 assert(panelText.includes("ji=await lv(Yp)"));
 if(withRoomVisibility){
  const roomRuntime=fs.readFileSync(path.join(__dirname,"room-visibility-runtime.js"),"utf8");
+ panelText=replaceOnce(panelText,'function no(e){return Eo.value.has(e)}function cl(e,t){const o=new Set(Eo.value);t?o.add(e):o.delete(e),Eo.value=o}function Md(){Eo.value.size!==0&&(Eo.value=new Set)}',fs.readFileSync(path.join(__dirname,'room-visibility-policy.js'),'utf8'));
  panelText=replaceOnce(panelText,"function uh(e){",roomRuntime+"function uh(e){");
  panelText=replaceOnce(panelText,"case\"toggle-room-member\":uh(e.memberId);break;",
   "case\"set-room-members-visibility\":__wtSetAllRoomMembersVisible(e.visible);break;case\"toggle-room-member\":uh(e.memberId);break;");

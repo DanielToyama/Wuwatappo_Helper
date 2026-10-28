@@ -4,11 +4,11 @@
 
 WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、配件、表情及界面素材的权利归各自权利人所有。
 
-当前为 **Helper 1.0.2.7 预览版**，适配官方 1.0.2。
+当前为 **Helper 1.0.2.8 预览版**，适配官方 1.0.2。
 
 修复 1.0.2.5 启动器报“请求的操作需要提升”的问题：保留官方内层程序的管理员权限声明，改由 Windows 正常请求 UAC 确认；取消时清理并退出。安装包本身仍无需管理员权限。
 
-[下载安装包](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.7/Wuwatappo_Helper-1.0.2.7-Setup.exe) · [下载免安装版](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.7/Wuwatappo_Helper-1.0.2.7-Portable.zip)
+[下载安装包](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.8/Wuwatappo_Helper-1.0.2.8-Setup.exe) · [下载免安装版](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.8/Wuwatappo_Helper-1.0.2.8-Portable.zip)
 
 [此前已发布的版本](https://github.com/Fantasicrap/Wuwatappo_Helper/releases) · [使用说明](docs/使用说明.md)
 
@@ -30,7 +30,8 @@ WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、�
 
 - 点击键盘工具栏的“手柄”，支持 Xbox、PS、Nintendo、通用布局；按键按下/松开高亮，双摇杆二维位置、扳机进度实时显示。
 - SDL3 接入 XInput、PS HID 和通用摇杆，按实际连接模式适配北通鲲鹏/阿修罗、飞智、盖世小鸡、八位堂等设备；支持热插拔和设备选择。
-- 提供按键/方向帽/轴学习、轴反向、中心/扳机范围校准、摇杆死区，按设备保存配置。
+- 保留同一轮采集内的按下与松开，短按可见高亮；断线重连清除旧状态，录制按真实事件时间记录。
+- 提供按键/方向帽/轴学习、轴反向、中心/扳机范围校准、独立摇杆与扳机死区，按设备保存配置。
 - 明确开始后录制当前手柄，可用 Ctrl+Alt+F10 开始/结束；结束后导出中文 TXT。断连、切换或隐藏会自动结束并保留导出。
 - 仍可分享一个 EXE，SDL 已内嵌，启动后释放到当前用户运行缓存。需要 .NET Framework 4.x、WebView2；请先退出旧版再启动。
 
@@ -57,14 +58,14 @@ WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、�
 
 - 设置面板请求取消置顶、显示在任务栏，点击外部保留面板，保留关闭按钮。
 - 保留自动宝箱开关：默认关闭，倒计时结束至少等 5 秒，检查领取条件，失败后退避重试。
-- 联机页一键显示、隐藏其他成员的桌宠，仅影响本机显示。
+- 联机页一键显示、隐藏其他成员的桌宠，仅影响本机显示。隐藏默认持续到点击“一键可见”或退出程序；后来加入、重连或换房的其他成员也默认隐藏，单独显示某成员可作为例外，再次一键隐藏会清除例外。
 - 自定义刷新、游戏模式、屏幕切换和桌宠显隐快捷键，提供冲突提醒，保留 PrtScr 截图键。
 - 保留此前的本地点击数按钮；本地显示变化不代表服务器已接受或已发放奖励。
 
 ## 安装与使用
 
 1. 退出正在运行的 WuwaTappo 或旧版修改程序。
-2. 下载并运行 `Wuwatappo_Helper-1.0.2.7-Setup.exe`，选择安装目录；桌面快捷方式可选。也可解压免安装版后运行 `Wuwatappo_Helper.exe`。
+2. 下载并运行 `Wuwatappo_Helper-1.0.2.8-Setup.exe`，选择安装目录；桌面快捷方式可选。也可解压免安装版后运行 `Wuwatappo_Helper.exe`。
 3. 登录并打开库存，等库存加载结束后点击“分享库存长图”。
 4. 生成完成后点击“保存 PNG”或“复制图片”。
 

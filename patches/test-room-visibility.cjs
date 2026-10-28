@@ -18,7 +18,8 @@ const original=JSON.stringify(members);
 const ctx={Ie:()=>false,Eo:{value:new Set([3,40])},fe:{value:members},Go:member=>member.id===1,
  Md:()=>{ctx.Eo.value=new Set()},xo:()=>updates.hover++,tn:()=>updates.layout++,tt:()=>updates.panel++};
 vm.createContext(ctx,{codeGeneration:{strings:false,wasm:false}});
-vm.runInContext(runtime+';this.setVisible=__wtSetAllRoomMembersVisible',ctx,{timeout:1000});
+ctx.W=value=>({value});ctx.Wo={value:1};
+vm.runInContext(fs.readFileSync(path.join(__dirname,'room-visibility-policy.js'),'utf8')+runtime+';this.setVisible=__wtSetAllRoomMembersVisible;this.hidden=no;this.individual=cl;this.reset=Md',ctx,{timeout:1000});
 ctx.setVisible(false);assert.deepEqual([...ctx.Eo.value].sort((a,b)=>a-b),[2,3,40]);
 ctx.setVisible(false);assert.deepEqual([...ctx.Eo.value].sort((a,b)=>a-b),[2,3,40]);
 assert(!ctx.Eo.value.has(1));assert(!ctx.Eo.value.has(4));assert(!ctx.Eo.value.has(5));assert(!ctx.Eo.value.has(-1));
@@ -34,6 +35,15 @@ vm.createContext(ui);vm.runInContext(uiCode+';this.bulk=__wtBulkRoomVisible',ui,
  assert.deepEqual(events,[{type:'set-room-members-visibility',visible:false},{type:'set-room-members-visibility',visible:true}]);
  for(const event of events)ctx.setVisible(event.visible);
  assert.equal(ctx.Eo.value.size,0);
+ ctx.setVisible(false);assert(ctx.hidden(200),'Late joiner must be hidden before first render');
+ assert(ctx.hidden(4)&&ctx.hidden(5),'Previously offline or dock-hidden peers stay hidden on return');
+ assert(!ctx.hidden(1)&&!ctx.hidden(-1)&&!ctx.hidden(NaN),'Never hide self or invalid IDs');
+ ctx.individual(200,false);assert(!ctx.hidden(200),'An explicit individual show overrides the default');
+ assert(ctx.hidden(201));ctx.setVisible(false);assert(ctx.hidden(200),'Hide all clears per-member show exceptions');
+ ctx.reset();assert(ctx.hidden(202),'Original room reset must not clear the session hide default');
+ ctx.setVisible(true);assert(!ctx.hidden(200)&&!ctx.hidden(203),'Show all restores future joiners too');
+ ctx.individual(200,true);assert(ctx.hidden(200)&&!ctx.hidden(203),'Individual hide still works after show all');
+ ctx.setVisible(false);ctx.Ie=()=>true;ctx.setVisible(true);assert(ctx.hidden(204));ctx.Ie=()=>false;
  const result={passed:true,checks:[
   'Hide all eligible online peers; exclude self, offline and non-displayed peers',
   'Repeated hide and show actions are idempotent',
@@ -43,6 +53,7 @@ vm.createContext(ui);vm.runInContext(uiCode+';this.bulk=__wtBulkRoomVisible',ui,
   'Hover, hit regions and room panel refreshed',
   'Forced update lock and invalid values ignored',
   'UI emits one explicit visibility message per button'
+  ,'Late join, reconnect, room reset and individual override obey the persistent session default'
  ],networkRequestsMade:false};
  fs.writeFileSync(path.join(__dirname,'room-visibility-tests.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));
 })().catch(e=>{console.error(e.stack);process.exitCode=1});
