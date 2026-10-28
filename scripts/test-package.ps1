@@ -20,6 +20,8 @@ $files = @{
     'DISCLAIMER.txt' = (Join-Path $repoRoot 'DISCLAIMER.txt')
     'THIRD_PARTY_NOTICES.md' = (Join-Path $repoRoot 'THIRD_PARTY_NOTICES.md')
     '使用说明.md' = (Join-Path $repoRoot 'docs/使用说明.md')
+    '手柄使用说明.md' = (Join-Path $repoRoot 'docs/手柄使用说明.md')
+    'licenses/SDL3-LICENSE.txt' = (Join-Path $repoRoot 'licenses/SDL3-LICENSE.txt')
 }
 foreach ($name in $files.Keys) {
     $expected = (Get-FileHash -LiteralPath $files[$name] -Algorithm SHA256).Hash

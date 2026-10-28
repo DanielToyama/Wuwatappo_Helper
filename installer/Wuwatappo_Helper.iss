@@ -5,7 +5,7 @@
   #define OutputDir "..\dist"
 #endif
 #ifndef AppVersion
-  #define AppVersion "1.0.2.4"
+  #define AppVersion "1.0.2.5"
 #endif
 
 [Setup]
@@ -49,6 +49,9 @@ Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\DISCLAIMER.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\THIRD_PARTY_NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\docs\使用说明.md"; DestDir: "{app}"; Flags: ignoreversion
+
+Source: "..\docs\手柄使用说明.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\licenses\SDL3-LICENSE.txt"; DestDir: "{app}\licenses"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\Wuwatappo_Helper"; Filename: "{app}\Wuwatappo_Helper.exe"; Check: not IsPackageTest

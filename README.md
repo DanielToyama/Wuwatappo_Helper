@@ -4,15 +4,27 @@
 
 WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、配件、表情及界面素材的权利归各自权利人所有。
 
-当前为 **Helper 1.0.2.4 预览版**，适配官方 1.0.2。
+当前为 **Helper 1.0.2.5 预览版**，适配官方 1.0.2。
 
-[下载安装包](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.4/Wuwatappo_Helper-1.0.2.4-Setup.exe) · [下载免安装版](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.4/Wuwatappo_Helper-1.0.2.4-Portable.zip)
+[下载安装包](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.5/Wuwatappo_Helper-1.0.2.5-Setup.exe) · [下载免安装版](https://github.com/Fantasicrap/Wuwatappo_Helper/releases/download/v1.0.2.5/Wuwatappo_Helper-1.0.2.5-Portable.zip)
 
 [此前已发布的版本](https://github.com/Fantasicrap/Wuwatappo_Helper/releases) · [使用说明](docs/使用说明.md)
 
 右键显示和录制使用独立的原生 wt-raw-mouse 通道，覆盖桌宠内外的按下与松开，窗口内保留释放补充处理；正常长按不使用固定超时清除。自动宝箱现在等待至少 5 秒再领取。
 
 桌宠外的全局左键显示和录制已增加补充事件源，同时保留原生拖动与点击处理。26 键模式也支持空格和左右鼠标键的高亮与松开。
+
+## 手柄显示与录制
+
+新增完整手柄外形的交互显示：十字键、面键、肩键、双摇杆和扳机放在对应位置，沿用桌宠的暖色圆润画风。Share / Options 在图上简写为 − / ≡，悬停提示与 TXT 保留完整名称。设备校准和诊断收在“选项”。
+
+- 点击键盘工具栏的“手柄”，支持 Xbox、PS、Nintendo、通用布局；按键按下/松开高亮，双摇杆二维位置、扳机进度实时显示。
+- SDL3 接入 XInput、PS HID 和通用摇杆，按实际连接模式适配北通鲲鹏/阿修罗、飞智、盖世小鸡、八位堂等设备；支持热插拔和设备选择。
+- 提供按键/方向帽/轴学习、轴反向、中心/扳机范围校准、摇杆死区，按设备保存配置。
+- 明确开始后录制当前手柄，可用 Ctrl+Alt+F10 开始/结束；结束后导出中文 TXT。断连、切换或隐藏会自动结束并保留导出。
+- 仍可分享一个 EXE，SDL 已内嵌，启动后释放到当前用户运行缓存。需要 .NET Framework 4.x、WebView2；请先退出旧版再启动。
+
+**实体 Xbox / PS / 北通手柄及真实游戏尚未实测。** 已验证 SDL 原生初始化、模拟输入、校准、断连停止、界面切换和 TXT 下载，兼容范围按接口与模式说明，不代表每个型号已认证。详见[手柄使用说明](docs/手柄使用说明.md)。本功能用于显示和记录，不改变游戏键位，不包含回放。
 
 ## 桌面键盘与鸣潮专属录制
 
@@ -42,7 +54,7 @@ WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、�
 ## 安装与使用
 
 1. 退出正在运行的 WuwaTappo 或旧版修改程序。
-2. 下载并运行 `Wuwatappo_Helper-1.0.2.4-Setup.exe`，选择安装目录；桌面快捷方式可选。也可解压免安装版后运行 `Wuwatappo_Helper.exe`。
+2. 下载并运行 `Wuwatappo_Helper-1.0.2.5-Setup.exe`，选择安装目录；桌面快捷方式可选。也可解压免安装版后运行 `Wuwatappo_Helper.exe`。
 3. 登录并打开库存，等库存加载结束后点击“分享库存长图”。
 4. 生成完成后点击“保存 PNG”或“复制图片”。
 
@@ -52,7 +64,8 @@ WuwaTappo 1.0.2 的非官方 Windows 辅助修改版本。原程序、角色、�
 
 TXT 和库存 PNG 均通过内置 WebView2 下载，程序没有固定保存目录。未改下载位置时，通常在 Windows“下载”文件夹（`%USERPROFILE%\Downloads`）；如果“下载”已迁移或另存时选择了其他目录，以实际位置为准。
 
-- TXT：点击“导出 TXT”后保存，文件名为 `Wuwa-操作录制-<时间戳>.txt`，可直接用记事本查看。
+- 手柄 TXT：点击“导出手柄 TXT”后保存，文件名为 `Wuwa-手柄录制-<时间戳>.txt`。
+- 鸣潮专属 TXT：点击“导出 TXT”后保存，文件名为 `Wuwa-操作录制-<时间戳>.txt`，可直接用记事本查看。
 - 分享图片：在长图预览中点击“保存 PNG”，文件名为 `WuwaTappo-库存-<时间戳>.png`；分段图片需分别保存。
 - “结束录制”“生成长图”不会自动保存文件；“复制图片”只写入剪贴板。
 
@@ -75,7 +88,7 @@ SHA-256: 099b62be14efe2cc99bb0ad3d37860488c42fb0f4e6282b5687e6335ab178573
 
 仓库包含辅助补丁与打包脚本，不提交原程序的解包代码、图片、账号文件或本机配置。
 
-需要 Windows、Node.js 22 或更新版本、pnpm、PowerShell 7、Inno Setup 6（或兼容版本）。
+需要 Windows、Node.js 22 或更新版本、pnpm、PowerShell 7、Inno Setup 6（或兼容版本）、Windows .NET Framework C# 编译器，以及摘要匹配的 SDL3 3.4.18 x64 运行库（准备方法见[手柄说明](docs/手柄使用说明.md#开发构建与核验)）。
 
 ```powershell
 pnpm install --frozen-lockfile

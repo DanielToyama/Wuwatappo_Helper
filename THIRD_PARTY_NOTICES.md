@@ -5,4 +5,7 @@
 - 安装程序由 [Inno Setup](https://jrsoftware.org/) 生成，Inno Setup 的版权归 Jordan Russell、Martijn Laan 等原作者所有。
 - 离线 PNG 测试使用 [@napi-rs/canvas](https://github.com/Brooooooklyn/canvas)；它是开发依赖，不随应用执行文件单独分发。
 
+- 手柄采集随发布 EXE 内嵌 [SDL3 3.4.18](https://github.com/libsdl-org/SDL/releases/tag/release-3.4.18) x64 运行库，版权归 Sam Lantinga 等作者所有，按 zlib 许可证分发，完整文本见 [SDL3-LICENSE.txt](licenses/SDL3-LICENSE.txt)。运行时释放原始 DLL，未修改 SDL 二进制。
+- 手柄外形为本项目的 SVG 矢量界面，按钮使用设备布局名称，不包含厂商商标图。
+
 仅供娱乐使用，创作者概不负责。

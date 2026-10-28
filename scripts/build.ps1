@@ -21,6 +21,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Independent resource verification failed' }
     & node (Join-Path $PSScriptRoot 'test-migration.cjs')
     if ($LASTEXITCODE -ne 0) { throw 'Migration checks failed' }
-    Copy-Item -LiteralPath (Join-Path $repoRoot 'patches/helper-release/Wuwatappo_Helper.exe') -Destination (Join-Path $distDir 'Wuwatappo_Helper.exe') -Force
+    & (Join-Path $PSScriptRoot 'build-controller-host.ps1') -OutputDirectory $distDir
+    if ($LASTEXITCODE -ne 0) { throw 'Controller launcher failed' }
     & (Join-Path $PSScriptRoot 'package.ps1') -IsccPath $compilerFile -OutputDirectory $distDir
 } finally { $env:WUWA_SOURCE_EXE = $previousSource }
