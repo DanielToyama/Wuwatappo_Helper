@@ -18,7 +18,7 @@ const __wtKeyboardUi=(()=>{
   ]);
  }
  function create(deps={}){
-  const doc=deps.document??document,core=__wtInputRecorder.create(deps.recorderOptions);let mode=readMode(),previousMode=mode==='hidden'?lastMode():mode,root=null,status=null,recordButton=null,exportsBox=null,counter=null,expandButton=null,stopListen=null,ticker=null,disposed=false;
+  const doc=deps.document??document,core=__wtInputRecorder.create(deps.recorderOptions);let mode=readMode(),previousMode=mode==='hidden'?lastMode():mode,root=null,status=null,recordButton=null,exportsBox=null,counter=null,expandButton=null,stopListen=null,stopMouse=null,ticker=null,disposed=false;
   const keys=new Map(),onAt=new Map(),timers=new Map(),urls=[];
   function allow(){return !deps.blocked?.()}
   function layout(){deps.layout?.()}
@@ -94,7 +94,15 @@ const __wtKeyboardUi=(()=>{
   function inside(point){
    if(!root||!point)return false;const local=deps.toClient?.(point.x,point.y);if(!local)return false;return [root,expandButton].some(node=>{if(!node)return false;const rect=node.getBoundingClientRect();return rect.width>0&&rect.height>0&&local.x>=rect.left&&local.x<=rect.right&&local.y>=rect.top&&local.y<=rect.bottom});
   }
-  function mouse(buttonName,action,point){key(buttonName==='left'?'MouseLeft':buttonName==='right'?'MouseRight':'',action==='press',{control:inside(point)})}
+  function mouse(buttonName,action,point){if(action!=='press'&&action!=='release')return;key(buttonName==='left'?'MouseLeft':buttonName==='right'?'MouseRight':'',action==='press',{control:inside(point)})}
+  function domMouse(event){
+   if(event.pointerType&&event.pointerType!=='mouse')return;
+   for(const[buttonName,button,mask]of [['left',0,1],['right',2,2]]){
+    // Use actual release/button-mask evidence, never a timeout: a real hold
+    // must remain highlighted and keep its full recorded duration.
+    if(event.type==='pointermove'?!(event.buttons&mask):event.button===button)mouse(buttonName,'release');
+   }
+  }
   function domKey(event){if(deps.hotkeys?.editable(event.target))return;key(event.code||event.key,event.type==='keydown',{control:deps.hotkeys?.fromEvent?.(event)==='record'})}
   async function mount(){
    if(root||disposed)return;
@@ -109,10 +117,12 @@ const __wtKeyboardUi=(()=>{
    expandButton.addEventListener('mousedown',event=>{event.preventDefault();event.stopPropagation()});expandButton.addEventListener('click',event=>event.stopPropagation());counter.insertBefore(expandButton,counter.firstChild);
    dock.insertBefore(root,counter);render();
    doc.addEventListener('keydown',domKey,true);doc.addEventListener('keyup',domKey,true);
+   for(const name of ['mouseup','pointerup','pointermove'])doc.addEventListener(name,domMouse,true);
    if(deps.listen)stopListen=await deps.listen('wt-keyboard-config',event=>{if(event.payload?.mode!==mode)setMode(event.payload?.mode,true)});
+   if(deps.listen)stopMouse=await deps.listen('wt-raw-mouse',event=>{const p=event.payload;if(p?.button==='right')mouse('right',p.action,deps.pointer?.())});
    ticker=setInterval(refresh,200);
   }
-  function dispose(){disposed=true;if(core.active)core.stop('app_closed');stopListen?.();clearInterval(ticker);doc.removeEventListener('keydown',domKey,true);doc.removeEventListener('keyup',domKey,true);for(const timer of timers.values())clearTimeout(timer);revoke();core.clear();root?.remove();expandButton?.remove();counter?.classList.remove('wt-info-with-keyboard','wt-keyboard-collapsed');root=null}
+  function dispose(){disposed=true;if(core.active)core.stop('app_closed');stopListen?.();stopMouse?.();clearInterval(ticker);doc.removeEventListener('keydown',domKey,true);doc.removeEventListener('keyup',domKey,true);for(const name of ['mouseup','pointerup','pointermove'])doc.removeEventListener(name,domMouse,true);for(const timer of timers.values())clearTimeout(timer);revoke();core.clear();root?.remove();expandButton?.remove();counter?.classList.remove('wt-info-with-keyboard','wt-keyboard-collapsed');root=null}
   return {mount,dispose,key,mouse,toggle,setMode,get recording(){return core.active},get last(){return core.last}};
  }
  return {create,settings,renderSettings,readMode,css};

@@ -1,15 +1,15 @@
 function __wtSetAllRoomMembersVisible(visible){
-  if(typeof visible!=="boolean"||Me())return;
-  if(visible){fd()}
+  if(typeof visible!=="boolean"||Ie())return;
+  if(visible){Md()}
   else{
-    const hidden=new Set(So.value);
+    const hidden=new Set(Eo.value);
     for(const member of fe.value){
-      if(!Number.isFinite(member.id)||member.id<=0||!member.online||!member.dockVisible||No(member))continue;
+      if(!Number.isFinite(member.id)||member.id<=0||!member.online||!member.dockVisible||Go(member))continue;
       hidden.add(member.id);
     }
-    So.value=hidden;
+    Eo.value=hidden;
   }
-  Ao();
-  en();
+  xo();
+  tn();
   tt();
 }

@@ -9,8 +9,8 @@ vm.createContext(ctx);vm.runInContext(guard+';this.open=Wt',ctx,{timeout:1000});
   assert.deepEqual(calls.map(c=>c.name),['set_skip_panel_outside_click_close','open_panel_window','set_skip_panel_outside_click_close']);
   assert.equal(calls[0].args.skip,true);assert.equal(calls[1].args.payload.tab,tab);assert.equal(calls[2].args.skip,true);
  }
- const source=fs.readFileSync(path.join(__dirname,'assets','index-DJ7ReN0h.js'),'utf8');
- assert(source.includes('x=>c("close")'));
+ const source=fs.readFileSync(path.join(__dirname,'assets','index-DH_DNc-i.js'),'utf8');
+ assert(source.includes('f=>c("close")'));
  const result={passed:true,checks:['Native outside-click-close guard set before and after each panel open','All five panel tabs covered','Existing explicit close control retained'],nativeWindowBehaviorTested:false,networkRequestsMade:false};
  fs.writeFileSync(path.join(__dirname,'panel-capture-tests.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));
 })().catch(e=>{console.error(e.stack);process.exitCode=1});

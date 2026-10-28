@@ -15,17 +15,17 @@ const members=[
  {id:2,online:true,dockVisible:true}
 ];
 const original=JSON.stringify(members);
-const ctx={Me:()=>false,So:{value:new Set([3,40])},fe:{value:members},No:member=>member.id===1,
- fd:()=>{ctx.So.value=new Set()},Ao:()=>updates.hover++,en:()=>updates.layout++,tt:()=>updates.panel++};
+const ctx={Ie:()=>false,Eo:{value:new Set([3,40])},fe:{value:members},Go:member=>member.id===1,
+ Md:()=>{ctx.Eo.value=new Set()},xo:()=>updates.hover++,tn:()=>updates.layout++,tt:()=>updates.panel++};
 vm.createContext(ctx,{codeGeneration:{strings:false,wasm:false}});
 vm.runInContext(runtime+';this.setVisible=__wtSetAllRoomMembersVisible',ctx,{timeout:1000});
-ctx.setVisible(false);assert.deepEqual([...ctx.So.value].sort((a,b)=>a-b),[2,3,40]);
-ctx.setVisible(false);assert.deepEqual([...ctx.So.value].sort((a,b)=>a-b),[2,3,40]);
-assert(!ctx.So.value.has(1));assert(!ctx.So.value.has(4));assert(!ctx.So.value.has(5));assert(!ctx.So.value.has(-1));
-ctx.setVisible(true);assert.equal(ctx.So.value.size,0);ctx.setVisible(true);assert.equal(ctx.So.value.size,0);
+ctx.setVisible(false);assert.deepEqual([...ctx.Eo.value].sort((a,b)=>a-b),[2,3,40]);
+ctx.setVisible(false);assert.deepEqual([...ctx.Eo.value].sort((a,b)=>a-b),[2,3,40]);
+assert(!ctx.Eo.value.has(1));assert(!ctx.Eo.value.has(4));assert(!ctx.Eo.value.has(5));assert(!ctx.Eo.value.has(-1));
+ctx.setVisible(true);assert.equal(ctx.Eo.value.size,0);ctx.setVisible(true);assert.equal(ctx.Eo.value.size,0);
 assert.equal(JSON.stringify(members),original);assert.deepEqual(updates,{hover:4,layout:4,panel:4});
-ctx.Me=()=>true;ctx.setVisible(false);assert.equal(ctx.So.value.size,0);assert.equal(updates.panel,4);
-ctx.Me=()=>false;ctx.setVisible('false');assert.equal(ctx.So.value.size,0);assert.equal(updates.panel,4);
+ctx.Ie=()=>true;ctx.setVisible(false);assert.equal(ctx.Eo.value.size,0);assert.equal(updates.panel,4);
+ctx.Ie=()=>false;ctx.setVisible('false');assert.equal(ctx.Eo.value.size,0);assert.equal(updates.panel,4);
 const events=[];
 const ui={de:async e=>events.push(JSON.parse(JSON.stringify(e))),He:()=>{},console:{warn:()=>{}}};
 vm.createContext(ui);vm.runInContext(uiCode+';this.bulk=__wtBulkRoomVisible',ui,{timeout:1000});
@@ -33,7 +33,7 @@ vm.createContext(ui);vm.runInContext(uiCode+';this.bulk=__wtBulkRoomVisible',ui,
  await ui.bulk(false);await ui.bulk(true);
  assert.deepEqual(events,[{type:'set-room-members-visibility',visible:false},{type:'set-room-members-visibility',visible:true}]);
  for(const event of events)ctx.setVisible(event.visible);
- assert.equal(ctx.So.value.size,0);
+ assert.equal(ctx.Eo.value.size,0);
  const result={passed:true,checks:[
   'Hide all eligible online peers; exclude self, offline and non-displayed peers',
   'Repeated hide and show actions are idempotent',

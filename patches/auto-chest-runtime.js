@@ -16,24 +16,24 @@ function __wtSetAutoChest(enabled){
   }catch(error){console.warn("[auto-chest] setting save failed",error)}
 }
 async function __wtAutoChestTick(){
-  if(!__wtAutoChestEnabled()||!R.isLoggedIn||Me()||nt.value.status!=="online"){
+  if(!__wtAutoChestEnabled()||!A.isLoggedIn||Ie()||nt.value.status!=="online"){
     __wtAutoChestDueSince.left=null;__wtAutoChestDueSince.right=null;return;
   }
   const now=Date.now();
   for(const side of ["left","right"]){
-    if(!(side==="left"?qn.value:Un.value))__wtAutoChestDueSince[side]=null;
+    if(!(side==="left"?Wn.value:Gn.value))__wtAutoChestDueSince[side]=null;
     else if(__wtAutoChestDueSince[side]===null)__wtAutoChestDueSince[side]=now;
   }
-  if(__wtAutoChestBusy||Co.value||R.totalClickCount<As)return;
+  if(__wtAutoChestBusy||Dn.value||A.totalClickCount<Ns)return;
   const sides=__wtAutoChestLastSide==="left"?["right","left"]:["left","right"];
-  const side=sides.find(value=>(value==="left"?qn.value:Un.value)&&__wtAutoChestDueSince[value]!==null&&now-__wtAutoChestDueSince[value]>=2000&&now>=__wtAutoChestRetry[value]);
+  const side=sides.find(value=>(value==="left"?Wn.value:Gn.value)&&__wtAutoChestDueSince[value]!==null&&now-__wtAutoChestDueSince[value]>=5000&&now>=__wtAutoChestRetry[value]);
   if(!side)return;
   __wtAutoChestBusy=true;
   __wtAutoChestLastSide=side;
   __wtAutoChestRetry[side]=now+30000;
   try{
-    await zl(side);
-    const stillDue=side==="left"?qn.value:Un.value;
+    await uc(side);
+    const stillDue=side==="left"?Wn.value:Gn.value;
     __wtAutoChestRetry[side]=Date.now()+(stillDue?30000:1000);
   }catch(error){
     __wtAutoChestRetry[side]=Date.now()+30000;

@@ -18,6 +18,8 @@ try {
     $manifestFile = Join-Path $repoRoot 'patches/helper-release/patch-manifest.json'
     & (Join-Path $repoRoot 'patches/verify-patched-exe.ps1') -ManifestPath $manifestFile
     if ($LASTEXITCODE -ne 0) { throw 'Independent resource verification failed' }
+    & node (Join-Path $PSScriptRoot 'test-migration.cjs')
+    if ($LASTEXITCODE -ne 0) { throw 'Migration checks failed' }
     Copy-Item -LiteralPath (Join-Path $repoRoot 'patches/helper-release/Wuwatappo_Helper.exe') -Destination (Join-Path $distDir 'Wuwatappo_Helper.exe') -Force
     & (Join-Path $PSScriptRoot 'package.ps1') -IsccPath $compilerFile
 } finally { $env:WUWA_SOURCE_EXE = $previousSource }

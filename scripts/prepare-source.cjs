@@ -3,7 +3,7 @@ const root=path.resolve(__dirname,'..'),patches=path.join(root,'patches');
 const sourcePath=path.resolve(process.argv[2]||'WuwaTappo.exe');
 const source=fs.readFileSync(sourcePath),manifest=JSON.parse(fs.readFileSync(path.join(patches,'extraction-manifest.json'),'utf8'));
 const hash=buffer=>crypto.createHash('sha256').update(buffer).digest('hex');
-assert.equal(hash(source),manifest.sourceSha256,'Unsupported original executable; expected reviewed WuwaTappo 1.0.1');
+assert.equal(hash(source),manifest.sourceSha256,'Unsupported original executable; expected reviewed WuwaTappo 1.0.2');
 const assets=path.join(patches,'assets'),fixtures=path.join(patches,'share-fixtures');fs.mkdirSync(assets,{recursive:true});fs.mkdirSync(fixtures,{recursive:true});
 for(const meta of manifest.assets){const decoded=zlib.brotliDecompressSync(source.subarray(meta.offset,meta.offset+meta.compressedBytes));assert.equal(hash(decoded),meta.sha256);fs.writeFileSync(path.join(assets,path.basename(meta.name)),decoded)}
 for(const name of ['atlas-thumb-1-BLGUkvwT.png','atlas-thumb-2-CSkXBHLD.png','atlas-thumb-3-Cf7ixdnU.png','atlas-thumb-4-CDuzFic3.png']){

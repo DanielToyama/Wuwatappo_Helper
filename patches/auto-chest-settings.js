@@ -1,4 +1,4 @@
-const __wtAutoChestUi=w((()=>{try{return localStorage.getItem("wuwatappo-auto-claim-chests-v1")==="1"}catch{return false}})());
+const __wtAutoChestUi=I((()=>{try{return localStorage.getItem("wuwatappo-auto-claim-chests-v1")==="1"}catch{return false}})());
 async function __wtToggleAutoChest(){
   const enabled=!__wtAutoChestUi.value;
   try{await de({type:"set-auto-claim-chests",enabled});__wtAutoChestUi.value=enabled}
