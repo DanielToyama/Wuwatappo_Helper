@@ -75,7 +75,7 @@ if(withHotkeys){
 if(withInventoryShare){
  text+="\nimport{__wtInventoryShare,__wtNormalPanel}from\"./"+path.basename(config.mainAsset)+"\";\n";
  text=replaceOnce(text,"const y=t,c=q,T=x(()=>{if(!oe.isLoggedIn)",
-  "const y=t,c=q,__wtShare=__wtInventoryShare.create(I,()=>({items:y.bagList,user:y.userInfo,host:y.assetsCdnHost,loggedIn:oe.isLoggedIn,loading:y.bagListLoading}),He),T=x(()=>{if(!oe.isLoggedIn)");
+  "const y=t,c=q,__wtShare=__wtInventoryShare.create(I,()=>({items:y.bagList,user:oe.userInfo,host:y.assetsCdnHost,loggedIn:oe.isLoggedIn,loading:y.bagListLoading}),He),T=x(()=>{if(!oe.isLoggedIn)");
  text=replaceOnce(text,"[e(\"div\",ql,[e(\"div\",Xl,[","[__wtInventoryShare.render(e,__wtShare),e(\"div\",ql,[e(\"div\",Xl,[");
  text=replaceOnce(text,"let k,V,z;function O(){requestAnimationFrame(()=>{ro().catch(C=>{console.warn(\"[panel] raise above pets failed\",C)})})}",
   "let k,V,z,__wtNormalizeStop;function O(){requestAnimationFrame(()=>{__wtNormalPanel(y).catch(C=>{console.warn(\"[panel] normal window failed\",C)})})}");

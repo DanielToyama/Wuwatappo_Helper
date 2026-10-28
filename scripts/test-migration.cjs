@@ -18,6 +18,9 @@ for(const change of manifest.changes){
  const before=globals(readAsset(change.asset)),after=globals(fs.readFileSync(change.jsPath,'utf8'));
  assert.deepEqual([...after].filter(name=>!before.has(name)&&!browserGlobals.has(name)),[],`Unbound migration symbols in ${change.asset}`);
 }
+const settingsChange=manifest.changes.find(c=>c.asset===config.settingsAsset);
+const shareBinding=require('./test-inventory-share-binding.cjs').verify(settingsChange.jsPath);
+console.log(JSON.stringify(shareBinding));
 const {spec,apply}=require('../patches/native-mouse-release.cjs');
 const source=fs.readFileSync(manifest.sourcePath),output=fs.readFileSync(manifest.outputPath),plan=apply(source,Buffer.from(source));
 for(const change of plan.changes)assert.equal(output.subarray(change.offset,change.offset+change.after.length/2).toString('hex'),change.after);
