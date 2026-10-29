@@ -25,7 +25,7 @@ const __wtKeyboardUi=(()=>{
   const doc=deps.document??document,core=__wtInputRecorder.create(deps.recorderOptions);let mode=readMode(),previousMode=mode==='hidden'?lastMode():mode,root=null,status=null,recordButton=null,exportsBox=null,counter=null,expandButton=null,stopListen=null,stopMouse=null,ticker=null,disposed=false;
   let controller=null,renderId=0;const keys=new Map(),onAt=new Map(),timers=new Map(),urls=[];
   function allow(){return !deps.blocked?.()}
-  function layout(){deps.layout?.()}
+  function layout(){if(root&&counter){const dock=root.parentElement;if(dock){const shift=root.hidden?0:Math.max(0,root.offsetHeight+10);dock.style.transform=shift?'translateY(-'+shift+'px)':''}}deps.layout?.()}
   function button(label,action,parent){const node=doc.createElement('button');node.type='button';node.textContent=label;node.onclick=action;parent.append(node);return node}
   function makeKey(key,label,parent){const node=doc.createElement('kbd');node.textContent=label??key;node.dataset.wtKey=key;node.setAttribute('aria-label',key);parent.append(node);keys.set(key,node);return node}
   function paint(key,down){
@@ -131,7 +131,7 @@ const __wtKeyboardUi=(()=>{
    if(deps.listen)stopMouse=await deps.listen('wt-raw-mouse',event=>{const p=event.payload;if(p?.button==='right')mouse('right',p.action,deps.pointer?.())});
    ticker=setInterval(refresh,200);
   }
-  function dispose(){disposed=true;renderId++;controller?.dispose();controller=null;if(core.active)core.stop('app_closed');stopListen?.();stopMouse?.();clearInterval(ticker);doc.removeEventListener('keydown',domKey,true);doc.removeEventListener('keyup',domKey,true);for(const name of ['mouseup','pointerup','pointermove'])doc.removeEventListener(name,domMouse,true);for(const timer of timers.values())clearTimeout(timer);revoke();core.clear();root?.remove();expandButton?.remove();counter?.classList.remove('wt-info-with-keyboard','wt-keyboard-collapsed');root=null}
+  function dispose(){disposed=true;renderId++;controller?.dispose();controller=null;if(core.active)core.stop('app_closed');stopListen?.();stopMouse?.();clearInterval(ticker);doc.removeEventListener('keydown',domKey,true);doc.removeEventListener('keyup',domKey,true);for(const name of ['mouseup','pointerup','pointermove'])doc.removeEventListener(name,domMouse,true);for(const timer of timers.values())clearTimeout(timer);revoke();core.clear();if(root?.parentElement)root.parentElement.style.transform='';root?.remove();expandButton?.remove();counter?.classList.remove('wt-info-with-keyboard','wt-keyboard-collapsed');root=null}
   return {mount,dispose,key,mouse,toggle,setMode,get recording(){return core.active||!!controller?.recording},get last(){return core.last}};
  }
  return {create,settings,renderSettings,readMode,css};

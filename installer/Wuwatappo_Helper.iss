@@ -68,3 +68,34 @@ function IsPackageTest: Boolean;
 begin
   Result := ExpandConstant('{param:PACKAGE_TEST|0}') = '1';
 end;
+
+function PetIsRunning: Boolean;
+var Locator, Service, Processes: Variant;
+begin
+  Locator := CreateOleObject('WbemScripting.SWbemLocator');
+  Service := Locator.ConnectServer('.', 'root\cimv2');
+  Processes := Service.ExecQuery('SELECT ProcessId FROM Win32_Process WHERE Name="Wuwatappo_Helper.exe" OR Name="WuwaTappo.exe"');
+  Result := Processes.Count > 0;
+end;
+
+function InitializeSetup: Boolean;
+var ResultCode, Attempts: Integer;
+begin
+  Result := True;
+  if IsPackageTest then exit;
+  try
+    if not PetIsRunning then exit;
+    if MsgBox('检测到 Wuwatappo Helper 或 WuwaTappo 正在运行。安装前需要关闭程序，是否现在尝试关闭？', mbConfirmation, MB_YESNO) <> IDYES then begin Result := False; exit; end;
+    Exec(ExpandConstant('{sys}\taskkill.exe'), '/IM Wuwatappo_Helper.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec(ExpandConstant('{sys}\taskkill.exe'), '/IM WuwaTappo.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    for Attempts := 1 to 5 do begin
+      if not PetIsRunning then exit;
+      Sleep(1000);
+    end;
+    MsgBox('无法自动关闭正在运行的程序。请从托盘退出，必要时以管理员身份关闭，然后重新运行安装包。', mbError, MB_OK);
+    Result := False;
+  except
+    MsgBox('无法检查程序是否正在运行。请退出 Wuwatappo 后重新运行安装包。', mbError, MB_OK);
+    Result := False;
+  end;
+end;
