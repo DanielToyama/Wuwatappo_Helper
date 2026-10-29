@@ -13,7 +13,7 @@ for(const[name,digest]of Object.entries(baseline.requestFunctions)){
  const node=declarations.find(n=>n.id.name===name);assert(node,`Missing baseline function ${name}`);assert.equal(hash(common.slice(node.start,node.end)),digest,`Changed API/asset/click function ${name}`);
 }
 function globals(code){const found=new Set();traverse(babelParse(code,'resource.mjs',true),{ReferencedIdentifier(p){if(!p.scope.getBinding(p.node.name))found.add(p.node.name)}});return found}
-const browserGlobals=new Set(['Infinity','HTMLInputElement','HTMLTextAreaElement','HTMLSelectElement','getComputedStyle','ClipboardItem','performance','setInterval','clearInterval']);
+const browserGlobals=new Set(['Infinity','HTMLInputElement','HTMLTextAreaElement','HTMLSelectElement','getComputedStyle','ClipboardItem','performance','setInterval','clearInterval','setTimeout','clearTimeout']);
 for(const change of manifest.changes){
  const before=globals(readAsset(change.asset)),after=globals(fs.readFileSync(change.jsPath,'utf8'));
  assert.deepEqual([...after].filter(name=>!before.has(name)&&!browserGlobals.has(name)),[],`Unbound migration symbols in ${change.asset}`);
@@ -21,6 +21,7 @@ for(const change of manifest.changes){
 const settingsChange=manifest.changes.find(c=>c.asset===config.settingsAsset);
 const shareBinding=require('./test-inventory-share-binding.cjs').verify(settingsChange.jsPath);
 console.log(JSON.stringify(shareBinding));
+require('child_process').execFileSync(process.execPath,[path.join(__dirname,'test-counter-guard.cjs')],{stdio:'inherit'});
 const {spec,apply}=require('../patches/native-mouse-release.cjs');
 const source=fs.readFileSync(manifest.sourcePath),output=fs.readFileSync(manifest.outputPath),plan=apply(source,Buffer.from(source));
 for(const change of plan.changes)assert.equal(output.subarray(change.offset,change.offset+change.after.length/2).toString('hex'),change.after);

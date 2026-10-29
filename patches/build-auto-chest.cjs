@@ -41,7 +41,9 @@ function asset(name){
 const settings=asset(config.settingsAsset);
 let text=settings.text;
 text=replaceOnce(text,config.hiddenAnchor,config.hiddenAnchor.replace("(!1)","(!0)"));
-text=replaceOnce(text,"async function As(){}",settingsRuntime+"async function As(){await de({type:\"boost-local-clicks\",delta:cl})}");
+text=replaceOnce(text,"async function As(){}",settingsRuntime+'const __wtBoostUi=I(false);async function As(){if(__wtBoostUi.value)return;__wtBoostUi.value=true;try{await de({type:"boost-local-clicks",delta:cl})}catch(e){console.warn("[counter] dispatch failed",e)}finally{setTimeout(()=>{__wtBoostUi.value=false},500)}}');
+text=replaceOnce(text,'class:"setting-btn btn-boost-clicks",onMousedown','class:"setting-btn btn-boost-clicks",disabled:__wtBoostUi.value,title:"每次增加10000；连续点击间隔至少0.5秒，保存期间不重复执行",onMousedown');
+text=replaceOnce(text,'" 点击数 +"+L(cl),32)','" 点击数 +"+L(cl),40,["disabled"])');
 const row="e(\"div\",{class:\"setting-item\"},[e(\"div\",{class:\"setting-label\"},[e(\"div\",{class:\"setting-title\"},\"自动领取宝箱\")]),e(\"div\",{class:\"setting-content\"},[e(\"button\",{type:\"button\",class:\"setting-btn\",title:\"冷却归零后至少等待5秒，点击数足够时领取；失败后30秒重试\",onMousedown:U(()=>{},[\"stop\"]),onClick:U(__wtToggleAutoChest,[\"stop\"]),\"aria-pressed\":__wtAutoChestUi.value},__wtAutoChestUi.value?\"已开启\":\"已关闭\",9,[\"aria-pressed\"])])])";
 text=replaceOnce(text,"e(\"div\",Bo,[e(\"div\",Oo,[",row+",e(\"div\",Bo,[e(\"div\",Oo,[");
 assert(text.includes("cl=1e4"));
@@ -86,6 +88,9 @@ settings.patched=text;
 const panel=asset(config.panelAsset);
 assert(!panel.text.includes("__wtAutoChest"));
 let panelText=replaceOnce(panel.text,"function Yp(e){",runtime+"function Yp(e){");
+panelText=replaceOnce(panelText,'function tt(){ge.value&&wu(fc())}',fs.readFileSync(path.join(__dirname,'counter-guard-runtime.js'),'utf8'));
+panelText=replaceOnce(panelText,'case"boost-local-clicks":{const t=Math.max(0,Math.floor(Number(e.delta)||0));t>0&&(A.addLocalClickCount(t),Rn(),A.isLoggedIn&&ki(A.cumulativeClickCount,A.userInfo?.cuid??""),tt());break}', 'case"boost-local-clicks":__wtBoostLocalClicks(e.delta);break;');
+panelText=replaceOnce(panelText,'Ri(()=>{mh(),Tc(),','Ri(()=>{__wtDisposeCounter();mh(),Tc(),');
 panelText=replaceOnce(panelText,"function Yp(e){switch(e.type){","function Yp(e){switch(e.type){case\"set-auto-claim-chests\":typeof e.enabled===\"boolean\"&&__wtSetAutoChest(e.enabled),tt();break;");
 panelText=replaceOnce(panelText,"Lr=setInterval(()=>{A.isLoggedIn&&Vn()},1e3)","Lr=setInterval(()=>{A.isLoggedIn&&Vn(),__wtAutoChestTick()},1e3)");
 assert(panelText.includes("await km({place:e,click_num:A.cumulativeClickCount})"));
@@ -118,7 +123,7 @@ if(withHotkeys){
  if(withKeyboard)panelText=replaceOnce(panelText,'const ee=j.closest("button");','const ee=j.closest("button,a[download]");');
  if(withKeyboard)panelText=replaceOnce(panelText,"const t=e.payload.button,o=e.payload.action;","const t=e.payload.button,o=e.payload.action;if(t!=='right')__wtKeyboard.mouse(t,o,{x:oe.value,y:de.value});");
  panelText=replaceOnce(panelText,"ji=await lv(Yp),","ji=await lv(Yp),await __wtInstallHotkeys(),"+(withKeyboard?"await __wtKeyboard.mount(),":""));
- panelText=replaceOnce(panelText,"Ri(()=>{mh(),Tc(),","Ri(()=>{"+(withKeyboard?"__wtKeyboard.dispose();":"")+"__wtDisposeHotkeys();mh(),Tc(),");
+ panelText=replaceOnce(panelText,"Ri(()=>{__wtDisposeCounter();mh(),Tc(),","Ri(()=>{__wtDisposeCounter();"+(withKeyboard?"__wtKeyboard.dispose();":"")+"__wtDisposeHotkeys();mh(),Tc(),");
  panelText+="\nimport{__wtHotkeys"+(withKeyboard?",__wtKeyboardUi":"")+"}from\"./"+path.basename(config.mainAsset)+"\";\n";
 }
 panel.patched=panelText;
@@ -180,6 +185,7 @@ const report={version:config.version,sourcePath:config.sourcePath,sourceSha256:c
  features:['Existing +10000 button retained','Optional automatic left and right chest claims','Existing cooldown and balance checks','No simultaneous automatic claims','30-second retry delay','Default off; setting persists'],
  changes,nativeChanges,testsPassed:true,sourceUnchanged:true,runtimeTested:false,serverClaimTested:false};
 if(withRoomVisibility)report.features.push('Room tab: hide all peer pets locally','Room tab: show all eligible peer pets locally');
+report.features.push('Local +10000 has a 500ms cooldown and one in-flight save; repeated triggers are ignored','Ordinary panel snapshots coalesce to one in-flight emit and at most five per second');
 report.features.push('Automatic claims wait at least 5 seconds after countdown readiness');
 if(withHotkeys)report.features.push('Configurable F5/F7/F8/F9 actions with modifier combinations','Persistent key bindings and reset defaults','Duplicate and reserved-key conflict feedback','Centered room visibility button labels');
 if(withScreenshotFix)report.features.push('Panel stays open on outside clicks via native skip guard','PrtScr passes through shortcut recording and action dispatch','Finished recorder does not consume unrelated keys');
