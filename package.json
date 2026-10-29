@@ -4,7 +4,7 @@
   "private": true,
   "description": "Non-official WuwaTappo 1.0.2 helper patches and Windows packaging",
   "scripts": {
-    "test": "node patches/test-auto-chest.cjs && node patches/test-room-visibility.cjs && node patches/test-hotkeys.cjs && node patches/test-emote-hotkeys.cjs && node patches/test-panel-capture.cjs && node patches/test-inventory-share.cjs && node patches/test-inventory-luck.cjs && node patches/test-input-recorder.cjs && node scripts/test-controller-core.cjs && node patches/test-room-history.cjs",
+    "test": "node patches/test-auto-chest.cjs && node patches/test-room-visibility.cjs && node patches/test-hotkeys.cjs && node patches/test-emote-hotkeys.cjs && node patches/test-native-hotkeys.cjs && node patches/test-panel-capture.cjs && node patches/test-inventory-share.cjs && node patches/test-inventory-luck.cjs && node patches/test-input-recorder.cjs && node scripts/test-controller-core.cjs && node patches/test-room-history.cjs",
     "test:keyboard-ui": "node scripts/test-keyboard-ui.cjs",
     "test:controller": "node scripts/test-controller-service.cjs",
     "test:room-history": "node scripts/test-room-history-ui.cjs"
