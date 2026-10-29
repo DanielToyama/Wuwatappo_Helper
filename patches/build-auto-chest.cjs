@@ -168,8 +168,9 @@ for(const resource of resources){
   newCompressedBytes:compressed.length,paddedBytes:resource.meta.compressedBytes-compressed.length,
   expandedBytes:bytes.length,jsPath});
 }
-const nativeResult=withKeyboard?require('./native-mouse-release.cjs').apply(source,patched):null;
-const nativeChanges=nativeResult?.changes??[];if(nativeResult)patched=nativeResult.output;
+const nativeChanges=[];
+if(withKeyboard){const nativeMouse=require('./native-mouse-release.cjs').apply(source,patched);patched=nativeMouse.output;nativeChanges.push(...nativeMouse.changes);}
+if(withHelperRelease){const nativeHotkey=require('./native-hotkey-release.cjs').apply(source,patched);patched=nativeHotkey.output;nativeChanges.push(...nativeHotkey.changes);}
 let cursor=0;
 const changedRanges=[...changes,...nativeChanges.map(change=>({...change,oldCompressedBytes:change.after.length/2}))];
 for(const change of changedRanges.sort((a,b)=>a.offset-b.offset)){
@@ -188,6 +189,7 @@ if(withRoomVisibility)report.features.push('Room tab: hide all peer pets locally
 report.features.push('Local +10000 has a 500ms cooldown and one in-flight save; repeated triggers are ignored','Ordinary panel snapshots coalesce to one in-flight emit and at most five per second');
 report.features.push('Automatic claims wait at least 5 seconds after countdown readiness');
 if(withHotkeys)report.features.push('Configurable F5/F7/F8/F9 actions with modifier combinations','Persistent key bindings and reset defaults','Duplicate and reserved-key conflict feedback','Centered room visibility button labels');
+if(withHelperRelease)report.features.push('Native F7/F8/F9 global registration disabled; keys reach other programs and actions stay on the existing LL hook');
 if(withScreenshotFix)report.features.push('Panel stays open on outside clicks via native skip guard','PrtScr passes through shortcut recording and action dispatch','Finished recorder does not consume unrelated keys');
 if(withInventoryShare)report.features.push('Panel requests normal non-topmost window behavior and taskbar presence on open','Automatic raise-above-pets bridge disabled','Full owned inventory PNG export: characters / accessories / emotes, five columns','Original panel background and inventory quantity badges','Original four rarity PNG backgrounds','Rarity descending then series and role name in Chinese pinyin order','PNG preview with save and copy; oversized inventories split at canvas limit','Failed image loads visibly marked');
 if(withKeyboard)report.features.push('Chibi 26-letter keyboard attached in front of the pet','Wuwa-only 1/2/3, Q/E/R, Space and two mouse buttons with live key highlights','Explicit start/stop recording limited to nine game controls','Readable UTF-8 TXT export with Chinese labels, press/release, relative times and hold durations','Configurable independent Ctrl+Alt+F10 recording shortcut','Recording stays in memory and is never uploaded automatically');
